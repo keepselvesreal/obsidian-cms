@@ -31,4 +31,5 @@ Instead of passively re-reading notes, you actively test yourself to retrieve th
 - [[interleaving]] - Mix active recall across topics
 
 ## See Also
+- [[test-note-1]] - General test notes
 - [[index]] - Back to Learning Methods

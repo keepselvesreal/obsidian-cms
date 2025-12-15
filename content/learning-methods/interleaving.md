@@ -36,3 +36,4 @@ Instead of blocking practice (doing all problems of one type together), you rand
 ## Combination with Other Methods
 - [[spaced-repetition]] - Space out interleaved sessions
 - [[active-recall]] - Test yourself on mixed topics
+- [[test-note-1]] - See general test notes for more

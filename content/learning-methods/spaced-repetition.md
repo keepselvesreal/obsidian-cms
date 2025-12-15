@@ -20,3 +20,7 @@ The spacing effect is a cognitive phenomenon where learning is more effective wh
 ## Related Methods
 - [[active-recall]] - Works perfectly with spaced repetition
 - [[interleaving]] - Combine with spaced repetition for optimal learning
+
+## See Also
+- [[test-note-1]] - General test notes
+- [[index]] - Back to home
