@@ -1,0 +1,18 @@
+{
+  "source_vault": "/home/nadle/문서/google-drive-obsidian",
+  "destination": "/home/nadle/para/projects/content-management-system/content",
+  "public_folder": "public",
+  "include_folders": [
+    "public"
+  ],
+  "exclude_patterns": [
+    "**/*.obsidian",
+    "**/.git",
+    "**/.DS_Store",
+    "**/Thumbs.db"
+  ],
+  "validate_links": true,
+  "copy_mode": "rsync",
+  "log_file": "/home/nadle/para/projects/content-management-system/logs/sync.log",
+  "description": "Configuration for Obsidian to Quartz sync"
+}
