@@ -1,4 +1,6 @@
-# Welcome to My Digital Garden
+---
+title: "Welcome to My Digital Garden"
+---
 
 This is my personal knowledge base published through Quartz.
 
