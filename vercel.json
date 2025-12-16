@@ -1,15 +1,5 @@
 {
   "buildCommand": "npx quartz build",
   "outputDirectory": "public",
-  "installCommand": "npm ci",
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/$1"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/404.html"
-    }
-  ]
+  "installCommand": "npm ci"
 }
