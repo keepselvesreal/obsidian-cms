@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# 파일의 Obsidian 링크와 이미지를 public 경로로 업데이트하는 모듈
+# 파일의 Obsidian 링크와 이미지를 상대 경로로 업데이트하는 모듈
 # 입력: 파일 경로, vault 경로, public 폴더 경로
 # 처리:
-#   - [[original/path|text]] → [[public/path|text]]
-#   - ![[image.png]] → ![[public/attachments/image.png]]
+#   - [[original/path|text]] → [[relative/path|text]] (public/ 프리픽스 제거)
+#   - ![[image.png]] → ![[attachments/image.png]]
 # 사용: update_links_in_file "/path/to/file.md" "/path/to/vault" "/path/to/public"
 
 update_links_in_file() {
@@ -55,7 +55,8 @@ update_links_in_file() {
 
     # find_in_public으로 public에서 검색
     if public_relative_path=$(find_in_public "$normalized_filename" "$public_dir" 2>/dev/null); then
-      # 검색 성공: [[public/...]] 형식으로 변환
+      # 검색 성공: public/ 프리픽스를 제거한 상대 경로로 변환
+      local converted_path="${public_relative_path#public/}"
 
       # display text 추출 (|이후 있으면)
       local display_text=""
@@ -65,14 +66,14 @@ update_links_in_file() {
 
       # 원본 링크와 새 링크 생성
       local old_link="[[${link}]]"
-      local new_link="[[$public_relative_path$display_text]]"
+      local new_link="[[$converted_path$display_text]]"
 
       # perl로 in-place 치환 (구분자를 #로 사용, sed의 복잡한 이스케이프 회피)
       perl -i -pe "s#\Q$old_link\E#$new_link#g" "$file"
     fi
   done <<< "$links"
 
-  # 5. 이미지 링크 업데이트 (![[image.png]] → ![[public/attachments/image.png]])
+  # 5. 이미지 링크 업데이트 (![[image.png]] → ![[attachments/image.png]])
   # 패턴: ![[filename.ext]] 형식의 이미지 링크
   local image_links=$(grep -oP '!\[\[\K[^\]]+(?=\]\])' "$file" 2>/dev/null || true)
 
@@ -85,9 +86,9 @@ update_links_in_file() {
       # 이미지 파일명 추출 (경로가 있으면 파일명만)
       local image_filename=$(basename "$image_link")
 
-      # 원본 이미지 링크와 새 링크 생성
+      # 원본 이미지 링크와 새 링크 생성 (public/ 프리픽스 제거)
       local old_image_link="![[${image_link}]]"
-      local new_image_link="![[public/attachments/$image_filename]]"
+      local new_image_link="![[attachments/$image_filename]]"
 
       # perl로 in-place 치환
       perl -i -pe "s#\Q$old_image_link\E#$new_image_link#g" "$file"

@@ -99,8 +99,8 @@ EOF
 
   # 링크 업데이트 실행
   if update_links_in_file "$test_file" "$TEST_VAULT" "$TEST_VAULT/public" 2>/dev/null; then
-    # 업데이트된 내용 확인
-    if grep -q "\\[\\[public/test/existing-note|existing-note\\]\\]" "$test_file"; then
+    # 업데이트된 내용 확인 (public/ 프리픽스가 제거되어야 함)
+    if grep -q "\\[\\[test/existing-note|existing-note\\]\\]" "$test_file"; then
       test_pass "Existing public link updated correctly"
     else
       test_fail "Link not updated correctly (content: $(cat "$test_file"))"
@@ -121,7 +121,7 @@ test_update_link_without_display_text() {
 EOF
 
   if update_links_in_file "$test_file" "$TEST_VAULT" "$TEST_VAULT/public" 2>/dev/null; then
-    if grep -q "\\[\\[public/test/existing-note\\]\\]" "$test_file"; then
+    if grep -q "\\[\\[test/existing-note\\]\\]" "$test_file"; then
       test_pass "Link without display text updated correctly"
     else
       test_fail "Link not updated correctly"
@@ -144,7 +144,7 @@ More text
 EOF
 
   if update_links_in_file "$test_file" "$TEST_VAULT" "$TEST_VAULT/public" 2>/dev/null; then
-    local link_count=$(grep -c "\\[\\[public/test/existing-note" "$test_file" || echo "0")
+    local link_count=$(grep -c "\\[\\[test/existing-note" "$test_file" || echo "0")
     if [ "$link_count" -eq 2 ]; then
       test_pass "Multiple links updated correctly"
     else
@@ -166,7 +166,7 @@ test_update_link_with_md_extension() {
 EOF
 
   if update_links_in_file "$test_file" "$TEST_VAULT" "$TEST_VAULT/public" 2>/dev/null; then
-    if grep -q "\\[\\[public/test/existing-note|note\\]\\]" "$test_file"; then
+    if grep -q "\\[\\[test/existing-note|note\\]\\]" "$test_file"; then
       test_pass "Link with .md extension updated correctly"
     else
       test_fail "Link not updated correctly"
@@ -213,8 +213,8 @@ test_update_image_links() {
 EOF
 
   if update_links_in_file "$test_file" "$TEST_VAULT" "$TEST_VAULT/public" 2>/dev/null; then
-    if grep -q "!\\[\\[public/attachments/Pasted image 20251216152427.png\\]\\]" "$test_file"; then
-      test_pass "Image link updated to public/attachments path"
+    if grep -q "!\\[\\[attachments/Pasted image 20251216152427.png\\]\\]" "$test_file"; then
+      test_pass "Image link updated correctly"
     else
       test_fail "Image link not updated correctly (content: $(cat "$test_file"))"
     fi
@@ -238,11 +238,11 @@ EOF
     local doc_link_ok=false
     local img_link_ok=false
 
-    if grep -q "\\[\\[public/test/existing-note|note\\]\\]" "$test_file"; then
+    if grep -q "\\[\\[test/existing-note|note\\]\\]" "$test_file"; then
       doc_link_ok=true
     fi
 
-    if grep -q "!\\[\\[public/attachments/screenshot.png\\]\\]" "$test_file"; then
+    if grep -q "!\\[\\[attachments/screenshot.png\\]\\]" "$test_file"; then
       img_link_ok=true
     fi
 
