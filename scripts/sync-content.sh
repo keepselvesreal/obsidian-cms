@@ -206,19 +206,12 @@ main() {
     if [ "$DRY_RUN" = false ]; then
       if rsync -av --delete "$PUBLIC_DIR/" "$CONTENT_DIR/" 2>&1 | tee -a "$LOG_FILE" "$LOG_LATEST"; then
         log_success "Synced to content folder"
-
-        # Step 5.5: 배포를 위한 파일 권한 수정
-        log_section "Fixing File Permissions"
-        find "$CONTENT_DIR" -type d -exec chmod 755 {} \; 2>/dev/null || true
-        find "$CONTENT_DIR" -type f -exec chmod 644 {} \; 2>/dev/null || true
-        log_success "Fixed permissions (directories: 755, files: 644)"
       else
         log_error "Failed to sync to content folder"
         ERROR_COUNT=$((ERROR_COUNT + 1))
       fi
     else
       log_info "[DRY-RUN] Would sync: $PUBLIC_DIR/ → $CONTENT_DIR/"
-      log_info "[DRY-RUN] Would fix permissions in content folder"
     fi
   fi
 
