@@ -1,4 +1,5 @@
 import Content from "./pages/Content"
+import ArticleWithLanguageToggle from "./pages/ArticleWithLanguageToggle"
 import TagContent from "./pages/TagContent"
 import FolderContent from "./pages/FolderContent"
 import NotFound from "./pages/404"
@@ -27,6 +28,7 @@ import ConditionalRender from "./ConditionalRender"
 export {
   ArticleTitle,
   Content,
+  ArticleWithLanguageToggle,
   TagContent,
   FolderContent,
   Darkmode,
