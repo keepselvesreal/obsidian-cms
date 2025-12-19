@@ -1,56 +1,53 @@
 // Language toggle functionality
 export default () => {
-  const langBtns = document.querySelectorAll('.lang-btn')
-  const savedLang = localStorage.getItem('preferredLang') || 'ko'
+  if (!document.querySelector('.lang-toggle')) return
 
-  // Set initial active button
-  document.querySelector(`.lang-btn[data-lang="${savedLang}"]`)?.classList.add('active')
+  const toggleButtons = document.querySelectorAll('.lang-btn')
+  const currentPath = window.location.pathname.replace(/\.en$/, '')
 
-  langBtns.forEach(btn => {
-    btn.addEventListener('click', async (e) => {
-      e.preventDefault()
-      const targetLang = (btn as HTMLElement).dataset.lang
+  // Load and parse language file
+  const loadLanguageVersion = async (lang: string) => {
+    try {
+      const url = lang === 'en' ? currentPath + '.en' : currentPath
 
-      if (!targetLang) return
+      const res = await fetch(url)
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
 
-      // Remove active class from all buttons
-      langBtns.forEach(b => b.classList.remove('active'))
+      const html = await res.text()
+      const parser = new DOMParser()
+      const doc = parser.parseFromString(html, 'text/html')
 
-      // Add active class to clicked button
-      btn.classList.add('active')
-
-      // Get current path without language suffix
-      const currentPath = window.location.pathname
-        .replace(/\.ko$/, '')
-        .replace(/\.en$/, '')
-
-      // Fetch the target language version
-      try {
-        const targetUrl = targetLang === 'ko'
-          ? currentPath
-          : currentPath + '.en'
-
-        const response = await fetch(targetUrl)
-        const html = await response.text()
-        const parser = new DOMParser()
-        const newDoc = parser.parseFromString(html, 'text/html')
-
-        // Extract article content
-        const newContent = newDoc.querySelector('article')
+      const article = doc.querySelector('article')
+      if (article) {
         const currentArticle = document.querySelector('article')
-
-        if (newContent && currentArticle) {
-          currentArticle.innerHTML = newContent.innerHTML
+        if (currentArticle) {
+          currentArticle.innerHTML = article.innerHTML
         }
+      }
 
-        // Save user preference
-        localStorage.setItem('preferredLang', targetLang)
+      localStorage.setItem('preferredLang', lang)
+    } catch (err) {
+      console.error('Language switch failed:', err)
+    }
+  }
 
-        // Scroll to top
-        window.scrollTo({ top: 0, behavior: 'smooth' })
-      } catch (error) {
-        console.error('Failed to load language version:', error)
+  // Attach click handlers
+  toggleButtons.forEach((button) => {
+    button.addEventListener('click', (e: Event) => {
+      e.preventDefault()
+      const lang = (button as HTMLElement).getAttribute('data-lang')
+      if (lang) {
+        loadLanguageVersion(lang)
+        toggleButtons.forEach((b) => b.classList.remove('active'))
+        button.classList.add('active')
       }
     })
   })
+
+  // Set initial button state
+  const savedLang = localStorage.getItem('preferredLang') || 'ko'
+  const activeBtn = document.querySelector(`.lang-btn[data-lang="${savedLang}"]`)
+  if (activeBtn) {
+    activeBtn.classList.add('active')
+  }
 }
