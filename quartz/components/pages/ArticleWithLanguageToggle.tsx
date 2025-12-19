@@ -18,7 +18,7 @@ const ArticleWithLanguageToggle: QuartzComponent = ({
       {/* 토글 버튼 */}
       <div
         class="lang-toggle"
-        style="display: flex; gap: 8px; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 2px solid #e0e0e0;"
+        style="display: flex; gap: 8px; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 2px solid #e0e0e0; justify-content: flex-end;"
       >
         <button
           class="lang-ko-btn"
