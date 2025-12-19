@@ -1,5 +1,5 @@
-// 이중언어 토글 기능
-// SPA 네비게이션 이후에도 작동하도록 전역 함수로 정의
+// 이중언어 페이지 이동
+// 각 페이지가 독립적으로 존재하며, 버튼 클릭 시 다른 언어 페이지로 이동
 
 declare global {
   interface Window {
@@ -7,56 +7,33 @@ declare global {
   }
 }
 
-// 토글 함수를 전역으로 정의
+/**
+ * 현재 페이지의 경로를 기반으로 다른 언어 페이지로 이동
+ */
 window.toggleLanguage = function(lang: string) {
-  const koDiv = document.querySelector('.lang-ko') as HTMLElement
-  const enDiv = document.querySelector('.lang-en') as HTMLElement
-  const koBtn = document.querySelector('.lang-ko-btn') as HTMLElement
-  const enBtn = document.querySelector('.lang-en-btn') as HTMLElement
+  let currentPath = window.location.pathname
 
-  if (lang === 'ko') {
-    if (koDiv) koDiv.style.display = 'block'
-    if (enDiv) enDiv.style.display = 'none'
-    if (koBtn) {
-      koBtn.style.background = '#284b63'
-      koBtn.style.color = 'white'
-      koBtn.style.borderColor = '#284b63'
-    }
-    if (enBtn) {
-      enBtn.style.background = 'white'
-      enBtn.style.color = '#333'
-      enBtn.style.borderColor = '#ccc'
+  // 마지막 / 제거
+  if (currentPath.endsWith('/')) {
+    currentPath = currentPath.slice(0, -1)
+  }
+
+  let newPath = currentPath
+
+  if (lang === 'en') {
+    // 한국어 → 영어로 이동 (.en 추가)
+    if (!currentPath.endsWith('.en')) {
+      newPath = currentPath + '.en'
     }
   } else {
-    if (koDiv) koDiv.style.display = 'none'
-    if (enDiv) enDiv.style.display = 'block'
-    if (koBtn) {
-      koBtn.style.background = 'white'
-      koBtn.style.color = '#333'
-      koBtn.style.borderColor = '#ccc'
-    }
-    if (enBtn) {
-      enBtn.style.background = '#284b63'
-      enBtn.style.color = 'white'
-      enBtn.style.borderColor = '#284b63'
+    // 영어 → 한국어로 이동 (.en 제거)
+    if (currentPath.endsWith('.en')) {
+      newPath = currentPath.slice(0, -3) // '.en' 제거
     }
   }
 
+  // 절대 경로로 이동
+  window.location.href = newPath
+
   localStorage.setItem('preferredLang', lang)
 }
-
-// 초기 언어 설정 (페이지 로드 시 및 SPA 네비게이션 시)
-function initializeLanguage() {
-  // 토글 버튼이 있는 페이지인지 확인
-  const langToggle = document.querySelector('.lang-toggle')
-  if (!langToggle) return
-
-  const savedLang = localStorage.getItem('preferredLang') || 'ko'
-  window.toggleLanguage(savedLang)
-}
-
-// 초기 로드 시 실행
-document.addEventListener('DOMContentLoaded', initializeLanguage)
-
-// SPA 네비게이션 후에도 실행
-document.addEventListener('nav', initializeLanguage)
