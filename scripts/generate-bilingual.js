@@ -85,7 +85,13 @@ function generateBilingual() {
       const bodyContent = baseHtml.match(/<body[^>]*>([\s\S]*?)<\/body>/);
       const innerBody = bodyContent ? bodyContent[1] : '';
 
+      const toggleButton = `<div class="lang-toggle" style="display: flex; gap: 8px; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 2px solid #e0e0e0;">
+  <button class="lang-ko-btn" onclick="toggleLanguage('ko')" style="padding: 10px 16px; border: 2px solid #284b63; background: #284b63; color: white; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 14px;">한국어</button>
+  <button class="lang-en-btn" onclick="toggleLanguage('en')" style="padding: 10px 16px; border: 2px solid #ccc; background: white; color: #333; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 14px;">English</button>
+</div>`;
+
       const mergedArticle = `
+        ${toggleButton}
         <div class="lang-ko">
           ${baseArticle}
         </div>
@@ -93,58 +99,55 @@ function generateBilingual() {
           ${enArticle}
         </div>`;
 
-      const toggleButton = `
-        <div class="lang-toggle" style="margin: 20px 0; display: flex; gap: 10px;">
-          <button class="lang-btn lang-ko-btn" data-lang="ko" onclick="toggleLanguage(event, 'ko')" style="padding: 8px 16px; border: 1px solid #ccc; background: #284b63; color: white; border-radius: 4px; cursor: pointer; font-weight: 500;">한국어</button>
-          <button class="lang-btn lang-en-btn" data-lang="en" onclick="toggleLanguage(event, 'en')" style="padding: 8px 16px; border: 1px solid #ccc; background: white; color: #333; border-radius: 4px; cursor: pointer; font-weight: 500;">English</button>
-        </div>
-        <script>
-          (function() {
-            const savedLang = localStorage.getItem('preferredLang') || 'ko';
+      const toggleScript = `<script>
+        (function() {
+          const savedLang = localStorage.getItem('preferredLang') || 'ko';
 
-            window.toggleLanguage = function(e, lang) {
-              if (e) e.preventDefault();
+          window.toggleLanguage = function(lang) {
+            const koDiv = document.querySelector('.lang-ko');
+            const enDiv = document.querySelector('.lang-en');
+            const koBtn = document.querySelector('.lang-ko-btn');
+            const enBtn = document.querySelector('.lang-en-btn');
 
-              const koDiv = document.querySelector('.lang-ko');
-              const enDiv = document.querySelector('.lang-en');
-              const koBtn = document.querySelector('.lang-ko-btn');
-              const enBtn = document.querySelector('.lang-en-btn');
-
-              if (lang === 'ko') {
-                if (koDiv) koDiv.style.display = 'block';
-                if (enDiv) enDiv.style.display = 'none';
-                if (koBtn) {
-                  koBtn.style.background = '#284b63';
-                  koBtn.style.color = 'white';
-                }
-                if (enBtn) {
-                  enBtn.style.background = 'white';
-                  enBtn.style.color = '#333';
-                }
-              } else {
-                if (koDiv) koDiv.style.display = 'none';
-                if (enDiv) enDiv.style.display = 'block';
-                if (koBtn) {
-                  koBtn.style.background = 'white';
-                  koBtn.style.color = '#333';
-                }
-                if (enBtn) {
-                  enBtn.style.background = '#284b63';
-                  enBtn.style.color = 'white';
-                }
+            if (lang === 'ko') {
+              if (koDiv) koDiv.style.display = 'block';
+              if (enDiv) enDiv.style.display = 'none';
+              if (koBtn) {
+                koBtn.style.background = '#284b63';
+                koBtn.style.color = 'white';
+                koBtn.style.borderColor = '#284b63';
               }
+              if (enBtn) {
+                enBtn.style.background = 'white';
+                enBtn.style.color = '#333';
+                enBtn.style.borderColor = '#ccc';
+              }
+            } else {
+              if (koDiv) koDiv.style.display = 'none';
+              if (enDiv) enDiv.style.display = 'block';
+              if (koBtn) {
+                koBtn.style.background = 'white';
+                koBtn.style.color = '#333';
+                koBtn.style.borderColor = '#ccc';
+              }
+              if (enBtn) {
+                enBtn.style.background = '#284b63';
+                enBtn.style.color = 'white';
+                enBtn.style.borderColor = '#284b63';
+              }
+            }
 
-              localStorage.setItem('preferredLang', lang);
-            };
+            localStorage.setItem('preferredLang', lang);
+          };
 
-            // 초기 언어 설정
-            window.toggleLanguage(null, savedLang);
-          })();
-        </script>`;
+          // 초기 언어 설정
+          window.toggleLanguage(savedLang);
+        })();
+      </script>`;
 
       const newBody = innerBody.replace(
         /<article[^>]*>[\s\S]*?<\/article>/,
-        `<article>${mergedArticle}</article>${toggleButton}`
+        `<article>${mergedArticle}</article>${toggleScript}`
       );
 
       const mergedHtml = `<!DOCTYPE html>
