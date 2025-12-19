@@ -34,7 +34,6 @@ export const defaultContentPageLayout: PageLayout = {
           Component: Component.Search(),
           grow: true,
         },
-        { Component: Component.LangToggle() },
         { Component: Component.Darkmode() },
         { Component: Component.ReaderMode() },
       ],
