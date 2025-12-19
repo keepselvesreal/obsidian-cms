@@ -38,7 +38,12 @@ export const defaultContentPageLayout: PageLayout = {
         { Component: Component.ReaderMode() },
       ],
     }),
-    Component.Explorer(),
+    Component.Explorer({
+      filterFn: (node) => {
+        // .en 파일 필터링
+        return !node.name || !node.name.endsWith('.en')
+      },
+    }),
   ],
   right: [
     Component.Graph(),
@@ -62,7 +67,12 @@ export const defaultListPageLayout: PageLayout = {
         { Component: Component.Darkmode() },
       ],
     }),
-    Component.Explorer(),
+    Component.Explorer({
+      filterFn: (node) => {
+        // .en 파일 필터링
+        return !node.name || !node.name.endsWith('.en')
+      },
+    }),
   ],
   right: [],
 }

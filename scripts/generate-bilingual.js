@@ -145,15 +145,9 @@ function generateBilingual() {
         })();
       </script>`;
 
-      let newBody = innerBody.replace(
+      const newBody = innerBody.replace(
         /<article[^>]*>[\s\S]*?<\/article>/,
         `<article>${mergedArticle}</article>${toggleScript}`
-      );
-
-      // Explorer 사이드바에서 .en 링크 제거
-      newBody = newBody.replace(
-        /<li[^>]*>\s*<a[^>]*href="[^"]*\.en"[^>]*>.*?<\/a>\s*<\/li>/g,
-        ''
       );
 
       const mergedHtml = `<!DOCTYPE html>
