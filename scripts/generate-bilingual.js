@@ -124,55 +124,9 @@ async function generateBilingual() {
           ${enArticle}
         </div>`;
 
-      const toggleScript = `<script>
-        (function() {
-          const savedLang = localStorage.getItem('preferredLang') || 'ko';
-
-          window.toggleLanguage = function(lang) {
-            const koDiv = document.querySelector('.lang-ko');
-            const enDiv = document.querySelector('.lang-en');
-            const koBtn = document.querySelector('.lang-ko-btn');
-            const enBtn = document.querySelector('.lang-en-btn');
-
-            if (lang === 'ko') {
-              if (koDiv) koDiv.style.display = 'block';
-              if (enDiv) enDiv.style.display = 'none';
-              if (koBtn) {
-                koBtn.style.background = '#284b63';
-                koBtn.style.color = 'white';
-                koBtn.style.borderColor = '#284b63';
-              }
-              if (enBtn) {
-                enBtn.style.background = 'white';
-                enBtn.style.color = '#333';
-                enBtn.style.borderColor = '#ccc';
-              }
-            } else {
-              if (koDiv) koDiv.style.display = 'none';
-              if (enDiv) enDiv.style.display = 'block';
-              if (koBtn) {
-                koBtn.style.background = 'white';
-                koBtn.style.color = '#333';
-                koBtn.style.borderColor = '#ccc';
-              }
-              if (enBtn) {
-                enBtn.style.background = '#284b63';
-                enBtn.style.color = 'white';
-                enBtn.style.borderColor = '#284b63';
-              }
-            }
-
-            localStorage.setItem('preferredLang', lang);
-          };
-
-          // 초기 언어 설정
-          window.toggleLanguage(savedLang);
-        })();
-      </script>`;
-
       const newBody = innerBody.replace(
         /<article[^>]*>[\s\S]*?<\/article>/,
-        `<article>${mergedArticle}</article>${toggleScript}`
+        `<article>${mergedArticle}</article>`
       );
 
       const mergedHtml = `<!DOCTYPE html>
