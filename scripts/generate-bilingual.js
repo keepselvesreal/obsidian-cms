@@ -38,6 +38,13 @@ function findFiles(dir, pattern) {
   return files;
 }
 
+// Frontmatter 제거
+function removeFrontmatter(content) {
+  // YAML Frontmatter 제거 (--- ... --- 형식)
+  const frontmatterRegex = /^---[\s\S]*?---\s*/;
+  return content.replace(frontmatterRegex, '').trim();
+}
+
 // 마크다운을 HTML로 변환
 async function markdownToHtml(markdown) {
   const tree = unified()
@@ -91,13 +98,18 @@ async function generateBilingual() {
 
     try {
       const baseHtml = fs.readFileSync(publicHtmlPath, 'utf8');
-      const enMarkdown = fs.readFileSync(fullEnMdPath, 'utf8');
+      let enMarkdown = fs.readFileSync(fullEnMdPath, 'utf8');
+
+      // Frontmatter 제거
+      enMarkdown = removeFrontmatter(enMarkdown);
 
       // 마크다운을 HTML로 변환
       const enHtml = await markdownToHtml(enMarkdown);
 
       const baseArticle = extractArticle(baseHtml);
-      const enArticle = enHtml; // 변환된 HTML 전체 사용
+      // HTML을 <article> 태그로 감싸서 extractArticle로 추출 가능하게 변환
+      const wrappedEnHtml = `<article>${enHtml}</article>`;
+      const enArticle = extractArticle(wrappedEnHtml);
 
       if (!baseArticle) {
         console.error(`✗ 실패: ${publicHtmlPath} (article 태그 없음)`);
