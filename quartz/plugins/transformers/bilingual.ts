@@ -1,15 +1,24 @@
 import { QuartzTransformerPlugin } from "../types"
-import { Root as HTMLRoot } from "hast"
+import { Root as HTMLRoot, Root as MdastRoot } from "hast"
 import { unified } from "unified"
 import remarkParse from "remark-parse"
 import remarkGfm from "remark-gfm"
 import remarkRehype from "remark-rehype"
 import { toHtml } from "hast-util-to-html"
+import { visit } from "unist-util-visit"
+import { toString } from "hast-util-to-string"
+import Slugger from "github-slugger"
 import * as fs from "fs"
 import * as path from "path"
 import { QuartzPluginData } from "../vfile"
 
 const contentDir = path.join(process.cwd(), "content")
+
+interface TocEntry {
+  depth: number
+  text: string
+  slug: string
+}
 
 /**
  * Frontmatter 제거 함수
@@ -20,19 +29,46 @@ function removeFrontmatter(content: string): string {
 }
 
 /**
- * 마크다운을 HTML로 변환
+ * HTML AST에서 목차 생성
  */
-async function markdownToHtml(markdown: string): Promise<string> {
-  const tree = unified()
+function extractTableOfContents(hast: HTMLRoot): TocEntry[] {
+  const toc: TocEntry[] = []
+  const slugger = new Slugger()
+
+  visit(hast, "element", (node) => {
+    if (node.tagName && /^h[1-6]$/.test(node.tagName)) {
+      const depth = parseInt(node.tagName[1])
+      const text = toString(node)
+      toc.push({
+        depth,
+        text,
+        slug: slugger.slug(text),
+      })
+    }
+  })
+
+  return toc
+}
+
+/**
+ * 마크다운을 HTML과 목차로 변환
+ */
+async function markdownToHtmlWithToc(
+  markdown: string
+): Promise<{ html: string; toc: TocEntry[] }> {
+  const mdast = unified()
     .use(remarkParse)
     .use(remarkGfm)
     .parse(markdown)
 
   const hast = unified()
     .use(remarkRehype)
-    .runSync(tree)
+    .runSync(mdast)
 
-  return toHtml(hast)
+  const html = toHtml(hast)
+  const toc = extractTableOfContents(hast as HTMLRoot)
+
+  return { html, toc }
 }
 
 export const Bilingual: QuartzTransformerPlugin = () => ({
@@ -63,14 +99,15 @@ export const Bilingual: QuartzTransformerPlugin = () => ({
             // Frontmatter 제거
             enMarkdown = removeFrontmatter(enMarkdown)
 
-            // 마크다운→HTML 변환 (Quartz 표준 파이프라인)
-            const enHtml = await markdownToHtml(enMarkdown)
+            // 마크다운→HTML + 목차 변환
+            const { html: enHtml, toc: enToc } = await markdownToHtmlWithToc(enMarkdown)
 
-            // frontmatter에 HTML 저장 (Component에서 접근)
+            // frontmatter에 저장
             if (!file.data.frontmatter) {
               file.data.frontmatter = {}
             }
             (file.data.frontmatter as any).enContent = enHtml
+            (file.data.frontmatter as any).enToc = enToc
 
             console.log(`✓ 이중언어 처리: ${filePath}`)
           } catch (error) {
@@ -89,6 +126,7 @@ declare module "vfile" {
   interface DataMap {
     frontmatter: QuartzPluginData["frontmatter"] & {
       enContent?: string
+      enToc?: TocEntry[]
     }
   }
 }
