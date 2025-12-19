@@ -17,7 +17,7 @@ const config: QuartzConfig = {
     },
     locale: "en-US",
     baseUrl: "knowledge-sherpa.vercel.app",
-    ignorePatterns: ["private", "templates", ".obsidian"],
+    ignorePatterns: ["private", "templates", ".obsidian", "**/*.en.md"],
     defaultDateType: "modified",
     theme: {
       fontOrigin: "googleFonts",

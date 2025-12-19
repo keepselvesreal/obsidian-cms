@@ -2,8 +2,14 @@
 
 import fs from 'fs';
 import path from 'path';
+import { unified } from 'unified';
+import remarkParse from 'remark-parse';
+import remarkGfm from 'remark-gfm';
+import remarkRehype from 'remark-rehype';
+import { toHtml } from 'hast-util-to-html';
 
 const PUBLIC_DIR = path.join(process.cwd(), 'public');
+const CONTENT_DIR = path.join(process.cwd(), 'content');
 
 // 재귀적으로 모든 파일 찾기
 function findFiles(dir, pattern) {
@@ -32,6 +38,20 @@ function findFiles(dir, pattern) {
   return files;
 }
 
+// 마크다운을 HTML로 변환
+async function markdownToHtml(markdown) {
+  const tree = unified()
+    .use(remarkParse)
+    .use(remarkGfm)
+    .parse(markdown);
+
+  const hast = unified()
+    .use(remarkRehype)
+    .runSync(tree);
+
+  return toHtml(hast);
+}
+
 // 정규식으로 HTML 파싱
 function extractArticle(html) {
   const match = html.match(/<article[^>]*>([\s\S]*?)<\/article>/);
@@ -48,35 +68,40 @@ function extractBodyAttrs(html) {
   return match ? match[1] : '';
 }
 
-function generateBilingual() {
-  // *.en.html 파일 찾기
-  const enFiles = findFiles(PUBLIC_DIR, /\.en\.html$/);
+async function generateBilingual() {
+  // content/**/*.en.md 파일 찾기
+  const enMdFiles = findFiles(CONTENT_DIR, /\.en\.md$/);
 
-  console.log(`찾은 영어 파일: ${enFiles.length}개\n`);
+  console.log(`찾은 영어 마크다운 파일: ${enMdFiles.length}개\n`);
 
-  enFiles.forEach((fullEnPath) => {
-    const enFilePath = path.relative(PUBLIC_DIR, fullEnPath);
-    const baseFilePath = enFilePath.replace('.en.html', '.html');
-    const fullBasePath = path.join(PUBLIC_DIR, baseFilePath);
+  for (const fullEnMdPath of enMdFiles) {
+    const relativePath = path.relative(CONTENT_DIR, fullEnMdPath);
+    const baseFileName = path.basename(fullEnMdPath, '.en.md');
+    const dirName = path.dirname(relativePath);
 
-    // 기본 HTML 파일 존재 확인
-    if (!fs.existsSync(fullBasePath)) {
-      console.log(`⊘ 스킵: ${enFilePath} (대응하는 .html 없음)`);
-      return;
+    // 대응하는 public/**/*.html 찾기
+    const publicHtmlPath = path.join(PUBLIC_DIR, dirName, `${baseFileName}.html`);
+
+    if (!fs.existsSync(publicHtmlPath)) {
+      console.log(`⊘ 스킵: ${relativePath} (대응하는 .html 없음)`);
+      continue;
     }
 
-    console.log(`병합: ${path.basename(baseFilePath)} + ${path.basename(enFilePath)}`);
+    console.log(`병합: ${path.basename(publicHtmlPath)} + ${path.basename(fullEnMdPath)}`);
 
     try {
-      const baseHtml = fs.readFileSync(fullBasePath, 'utf8');
-      const enHtml = fs.readFileSync(fullEnPath, 'utf8');
+      const baseHtml = fs.readFileSync(publicHtmlPath, 'utf8');
+      const enMarkdown = fs.readFileSync(fullEnMdPath, 'utf8');
+
+      // 마크다운을 HTML로 변환
+      const enHtml = await markdownToHtml(enMarkdown);
 
       const baseArticle = extractArticle(baseHtml);
-      const enArticle = extractArticle(enHtml);
+      const enArticle = enHtml; // 변환된 HTML 전체 사용
 
-      if (!baseArticle || !enArticle) {
-        console.error(`✗ 실패: ${baseFilePath} (article 태그 없음)`);
-        return;
+      if (!baseArticle) {
+        console.error(`✗ 실패: ${publicHtmlPath} (article 태그 없음)`);
+        continue;
       }
 
       // 새로운 HTML 생성
@@ -160,18 +185,17 @@ ${newBody}
 </body>
 </html>`;
 
-      fs.writeFileSync(fullBasePath, mergedHtml);
-      console.log(`✓ 생성: ${baseFilePath}`);
-
-      // .en.html 삭제
-      fs.unlinkSync(fullEnPath);
-      console.log(`✓ 삭제: ${path.basename(enFilePath)}`);
+      fs.writeFileSync(publicHtmlPath, mergedHtml);
+      console.log(`✓ 생성: ${path.relative(PUBLIC_DIR, publicHtmlPath)}`);
     } catch (error) {
-      console.error(`✗ 에러 (${baseFilePath}):`, error.message);
+      console.error(`✗ 에러 (${relativePath}):`, error.message);
     }
-  });
+  }
 
   console.log('\n이중언어 페이지 생성 완료!');
 }
 
-generateBilingual();
+generateBilingual().catch(err => {
+  console.error('Fatal error:', err);
+  process.exit(1);
+});
