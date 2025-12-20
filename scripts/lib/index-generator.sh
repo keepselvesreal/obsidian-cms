@@ -41,21 +41,14 @@ generate_folder_index() {
 
   # index.md 생성
   {
-    echo "# $title"
+    echo "---"
+    echo "title: \"$title\""
+    echo "---"
     echo ""
 
     if [ -n "$cover_image" ]; then
       echo "![cover](./$(basename "$cover_image"))"
       echo ""
-    fi
-
-    if [ ${#md_files[@]} -gt 0 ]; then
-      echo "## Contents"
-      for file in "${md_files[@]}"; do
-        local file_name=$(basename "$file")
-        local file_name_no_ext="${file_name%.md}"
-        echo "- [$file_name_no_ext](./$file_name)"
-      done
     fi
   } > "$index_file"
 }
