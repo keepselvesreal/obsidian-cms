@@ -1,3 +1,5 @@
+import 'dotenv/config'
+
 import { QuartzConfig } from "./quartz/cfg"
 import * as Plugin from "./quartz/plugins"
 
@@ -13,7 +15,10 @@ const config: QuartzConfig = {
     enableSPA: true,
     enablePopovers: true,
     analytics: {
-      provider: "plausible",
+      provider: "google",
+      tagId: process.env.GOOGLE_ANALYTICS_ID || (() => {
+        throw new Error("GOOGLE_ANALYTICS_ID environment variable is not set")
+      })(),
     },
     locale: "en-US",
     baseUrl: "knowledge-sherpa.vercel.app",
