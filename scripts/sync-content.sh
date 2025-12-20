@@ -8,6 +8,7 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 # 라이브러리 로드
 source "$SCRIPT_DIR/lib/logger.sh"
+source "$SCRIPT_DIR/lib/index-generator.sh"
 
 # 설정 변수
 OBSIDIAN_VAULT="/home/nadle/문서/google-drive-obsidian"
@@ -103,6 +104,16 @@ main() {
     fi
   else
     log_info "[DRY-RUN] Would sync: $PUBLIC_DIR/ → $CONTENT_DIR/"
+  fi
+
+  # Index 파일 생성
+  log_section "Generating folder indexes"
+
+  if [ "$DRY_RUN" = false ]; then
+    generate_all_folder_indexes "$CONTENT_DIR"
+    log_success "Generated folder indexes"
+  else
+    log_info "[DRY-RUN] Would generate folder indexes in: $CONTENT_DIR"
   fi
 
   # 최종 요약
