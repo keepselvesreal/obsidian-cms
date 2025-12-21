@@ -35,10 +35,21 @@ generate_folder_index() {
     cover_image="cover.png"
   fi
 
+  # 영어 버전 파일 찾기 (-en.md 파일 존재 확인)
+  local has_english_version=false
+  local md_files
+  md_files=$(find "$folder" -maxdepth 1 -type f -name "*-en.md" 2>/dev/null | head -1) || true
+  if [ -n "$md_files" ]; then
+    has_english_version=true
+  fi
+
   # index.md 생성
   {
     echo "---"
     echo "title: \"$title\""
+    if [ "$has_english_version" = true ]; then
+      echo "hasEnglishVersion: true"
+    fi
     echo "---"
     echo ""
 
