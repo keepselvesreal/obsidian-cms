@@ -110,7 +110,20 @@ convert_references_to_cms_paths() {
       local cms_path="${parsed%%|*}"
       local text="${parsed##*|}"
 
+      # 기본 파일 링크 추가
       echo "- [$text]($cms_path)" >> "$temp_file"
+
+      # 영어 버전 파일 확인 및 추가
+      local en_file="${cms_path}-en"
+      local obsidian_en_file="${ref#\[\[}"
+      obsidian_en_file="${obsidian_en_file%\]\]}"
+      obsidian_en_file="${obsidian_en_file%%|*}"
+      obsidian_en_file="${obsidian_en_file%.md}-en.md"
+
+      # Obsidian vault에서 -en 파일 존재 확인
+      if [ -f "$OBSIDIAN_VAULT/$obsidian_en_file" ]; then
+        echo "- [$text (EN)]($en_file)" >> "$temp_file"
+      fi
     done <<< "$references"
   fi
 

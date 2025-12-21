@@ -67,6 +67,45 @@ resolve_reference_to_file() {
 }
 
 # ============================================================
+# 함수: 언어별 버전 파일 함께 동기화 (내부)
+# 입력: $1 = 원본 파일 경로, $2 = 대상 파일 경로
+# ============================================================
+copy_language_variants() {
+  local source_file="$1"
+  local dest_file="$2"
+  local source_base="${source_file%.md}"      # .md 제거
+  local dest_base="${dest_file%.md}"          # .md 제거
+
+  # -en 버전 파일 확인 및 복사
+  local en_file="${source_base}-en.md"
+  if [ -f "$en_file" ]; then
+    cp "$en_file" "${dest_base}-en.md"
+
+    # 영어 버전 파일의 frontmatter에 hasEnglishVersion 메타데이터 추가
+    local dest_en_file="${dest_base}-en.md"
+    local temp_fm
+    temp_fm=$(mktemp)
+
+    # frontmatter 끝 찾기
+    local fm_end
+    fm_end=$(awk '/^---$/{count++; if(count==2){print NR; exit}}' "$dest_en_file")
+
+    if [ -n "$fm_end" ]; then
+      # frontmatter 부분 추출
+      head -n "$((fm_end - 1))" "$dest_en_file" > "$temp_fm"
+      # hasEnglishVersion 메타데이터 추가
+      echo "hasEnglishVersion: true" >> "$temp_fm"
+      echo "---" >> "$temp_fm"
+      # 본문 추가
+      tail -n "+$((fm_end + 1))" "$dest_en_file" >> "$temp_fm"
+      mv "$temp_fm" "$dest_en_file"
+    fi
+
+    log_success "  ✓ Synced EN version: $(basename "$en_file")"
+  fi
+}
+
+# ============================================================
 # 함수: 참조된 파일들 동기화 (posts용)
 # 입력: $1 = 마크다운 파일, $2 = DRY_RUN (선택사항)
 # ============================================================
@@ -161,6 +200,33 @@ sync_referenced_file() {
     mv "$temp_file" "$dest_file"
     log_success "  ✓ Synced: $(basename "$file_path")"
 
+    # 언어별 버전 파일 복사
+    copy_language_variants "$file_path" "$dest_file"
+
+    # Frontmatter에 영어 버전 존재 여부 추가
+    local source_base="${file_path%.md}"
+    local en_file="${source_base}-en.md"
+    if [ -f "$en_file" ]; then
+      # 영어 버전 파일이 있으면 frontmatter에 메타데이터 추가
+      local temp_fm
+      temp_fm=$(mktemp)
+
+      # frontmatter 끝 찾기
+      local fm_end
+      fm_end=$(awk '/^---$/{count++; if(count==2){print NR; exit}}' "$dest_file")
+
+      if [ -n "$fm_end" ]; then
+        # frontmatter 부분 추출
+        head -n "$((fm_end - 1))" "$dest_file" > "$temp_fm"
+        # hasEnglishVersion 메타데이터 추가
+        echo "hasEnglishVersion: true" >> "$temp_fm"
+        echo "---" >> "$temp_fm"
+        # 본문 추가
+        tail -n "+$((fm_end + 1))" "$dest_file" >> "$temp_fm"
+        mv "$temp_fm" "$dest_file"
+      fi
+    fi
+
     # 참조 파일이 속한 폴더의 index.md 생성
     local dest_folder_path
     dest_folder_path=$(dirname "$dest_file")
@@ -217,6 +283,33 @@ sync_referenced_folder() {
       mkdir -p "$(dirname "$dest_file")"
       mv "$temp_file" "$dest_file"
       log_success "  ✓ Synced: $folder_name/$(basename "$md_file")"
+
+      # 언어별 버전 파일 복사
+      copy_language_variants "$md_file" "$dest_file"
+
+      # Frontmatter에 영어 버전 존재 여부 추가
+      local md_base="${md_file%.md}"
+      local en_file="${md_base}-en.md"
+      if [ -f "$en_file" ]; then
+        # 영어 버전 파일이 있으면 frontmatter에 메타데이터 추가
+        local temp_fm
+        temp_fm=$(mktemp)
+
+        # frontmatter 끝 찾기
+        local fm_end
+        fm_end=$(awk '/^---$/{count++; if(count==2){print NR; exit}}' "$dest_file")
+
+        if [ -n "$fm_end" ]; then
+          # frontmatter 부분 추출
+          head -n "$((fm_end - 1))" "$dest_file" > "$temp_fm"
+          # hasEnglishVersion 메타데이터 추가
+          echo "hasEnglishVersion: true" >> "$temp_fm"
+          echo "---" >> "$temp_fm"
+          # 본문 추가
+          tail -n "+$((fm_end + 1))" "$dest_file" >> "$temp_fm"
+          mv "$temp_fm" "$dest_file"
+        fi
+      fi
     else
       log_info "[DRY-RUN] Would sync: $(basename "$md_file")"
     fi

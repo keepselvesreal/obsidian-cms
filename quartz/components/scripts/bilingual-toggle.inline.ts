@@ -21,14 +21,14 @@ window.toggleLanguage = function(lang: string) {
   let newPath = currentPath
 
   if (lang === 'en') {
-    // 한국어 → 영어로 이동 (.en 추가)
-    if (!currentPath.endsWith('.en')) {
-      newPath = currentPath + '.en'
+    // 한국어 → 영어로 이동 (-en 추가)
+    if (!currentPath.endsWith('-en')) {
+      newPath = currentPath + '-en'
     }
   } else {
-    // 영어 → 한국어로 이동 (.en 제거)
-    if (currentPath.endsWith('.en')) {
-      newPath = currentPath.slice(0, -3) // '.en' 제거
+    // 영어 → 한국어로 이동 (-en 제거)
+    if (currentPath.endsWith('-en')) {
+      newPath = currentPath.slice(0, -3) // '-en' 제거
     }
   }
 
