@@ -94,9 +94,9 @@ sync_obsidian_embed_images() {
       img_abs_path="$file_dir/$img_name"
     fi
 
-    # 2. attachments 폴더에서 찾기
-    if [ -z "$img_abs_path" ] && [ -f "$OBSIDIAN_VAULT/attachments/$img_name" ]; then
-      img_abs_path="$OBSIDIAN_VAULT/attachments/$img_name"
+    # 2. resources/attachments 폴더에서 찾기
+    if [ -z "$img_abs_path" ] && [ -f "$OBSIDIAN_VAULT/resources/attachments/$img_name" ]; then
+      img_abs_path="$OBSIDIAN_VAULT/resources/attachments/$img_name"
     fi
 
     # 파일 존재 확인
