@@ -11,6 +11,9 @@ TIMESTAMP=$(date +%y-%m-%d-%H%M)
 LOG_FILE="$LOG_DIR/${TIMESTAMP}.log"
 LOG_LATEST="$LOG_DIR/sync-latest.log"
 
+# Verbose 모드 (기본값: false)
+VERBOSE=${VERBOSE:-false}
+
 # 로그 함수들
 log_info() {
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] [INFO] $1" | tee -a "$LOG_FILE" "$LOG_LATEST"
@@ -32,4 +35,10 @@ log_section() {
   echo "" | tee -a "$LOG_FILE" "$LOG_LATEST"
   echo "========== $1 ==========" | tee -a "$LOG_FILE" "$LOG_LATEST"
   echo "" | tee -a "$LOG_FILE" "$LOG_LATEST"
+}
+
+log_debug() {
+  if [ "$VERBOSE" = true ]; then
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] [DEBUG] $1" | tee -a "$LOG_FILE" "$LOG_LATEST"
+  fi
 }
