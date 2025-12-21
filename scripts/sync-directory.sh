@@ -14,6 +14,9 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/lib/logger.sh"
 source "$SCRIPT_DIR/lib/options-parser.sh"
 source "$SCRIPT_DIR/lib/error-handler.sh"
+source "$SCRIPT_DIR/lib/path-resolver.sh"
+source "$SCRIPT_DIR/lib/image-handler.sh"
+source "$SCRIPT_DIR/lib/index-generator.sh"
 source "$SCRIPT_DIR/config.sh"
 
 # ============================================================
@@ -152,7 +155,39 @@ main() {
   rm -f "$temp_file_list"
 
   # ============================================================
-  # 3. 결과 요약
+  # 3. Cover 복사 및 Index 파일 생성
+  # ============================================================
+
+  if [ "$dry_run" = false ] && [ "$failed_count" -eq 0 ]; then
+    log_section "Generating Index Files"
+
+    # 대상 폴더 계산
+    local resource_type
+    if ! resource_type=$(get_resource_type "$source_folder"); then
+      log_warning "Could not determine resource type for: $source_folder"
+    else
+      local dest_folder_name
+      dest_folder_name=$(basename "$source_folder")
+
+      local dest_base_folder
+      dest_base_folder=$(get_destination_folder "$resource_type") || return 1
+
+      local dest_folder_path="$CONTENT_DIR/$dest_base_folder/$dest_folder_name"
+
+      if [ -d "$dest_folder_path" ]; then
+        log_info "Creating index for: $dest_folder_name"
+
+        # Cover 이미지 복사
+        sync_cover_image "$source_folder" "$dest_folder_path" "$dry_run"
+
+        # Index 생성
+        generate_folder_index "$dest_folder_path"
+      fi
+    fi
+  fi
+
+  # ============================================================
+  # 4. 결과 요약
   # ============================================================
 
   log_section "Sync Summary"

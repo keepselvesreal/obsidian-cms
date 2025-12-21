@@ -123,6 +123,38 @@ sync_obsidian_embed_images() {
 }
 
 # ============================================================
+# 함수: Cover 이미지 복사
+# 입력: $1 = Source 폴더 경로 (vault 내)
+#       $2 = Destination 폴더 경로 (content 내)
+#       $3 = DRY_RUN (선택사항)
+# ============================================================
+sync_cover_image() {
+  local source_folder="$1"
+  local dest_folder="$2"
+  local dry_run="${3:-false}"
+
+  log_debug "sync_cover_image: $source_folder → $dest_folder"
+
+  # source에서 cover.png 찾기
+  if [ ! -f "$source_folder/cover.png" ]; then
+    log_debug "sync_cover_image: no cover.png found"
+    return 0
+  fi
+
+  local dest_cover="$dest_folder/cover.png"
+
+  if [ "$dry_run" = false ]; then
+    mkdir -p "$dest_folder"
+    cp "$source_folder/cover.png" "$dest_cover"
+    log_success "  ✓ Copied: cover.png"
+  else
+    log_info "[DRY-RUN] Would copy: cover.png"
+  fi
+
+  return 0
+}
+
+# ============================================================
 # 함수: 모든 이미지 동기화
 # 입력: $1 = 마크다운 파일, $2 = DRY_RUN (선택사항)
 # ============================================================

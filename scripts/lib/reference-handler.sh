@@ -156,6 +156,19 @@ sync_referenced_file() {
     mkdir -p "$(dirname "$dest_file")"
     mv "$temp_file" "$dest_file"
     log_success "  ✓ Synced: $(basename "$file_path")"
+
+    # 참조 파일이 속한 폴더의 index.md 생성
+    local dest_folder_path
+    dest_folder_path=$(dirname "$dest_file")
+    if [ -d "$dest_folder_path" ]; then
+      # Cover 이미지 복사
+      local source_parent_folder
+      source_parent_folder=$(dirname "$file_path")
+      sync_cover_image "$source_parent_folder" "$dest_folder_path" "false"
+
+      # Index 생성
+      generate_folder_index "$dest_folder_path"
+    fi
   else
     log_info "[DRY-RUN] Would sync file: $(basename "$file_path")"
   fi
@@ -200,4 +213,18 @@ sync_referenced_folder() {
       log_info "[DRY-RUN] Would sync: $(basename "$md_file")"
     fi
   done <<< "$md_files"
+
+  # 참조 폴더 동기화 완료 후 cover 복사 및 index.md 생성
+  if [ "$dry_run" = false ]; then
+    local dest_folder_path="$CONTENT_DIR/$dest_folder/$folder_name"
+    if [ -d "$dest_folder_path" ]; then
+      log_info "Generating index for: $folder_name"
+
+      # Cover 이미지 복사
+      sync_cover_image "$folder_path" "$dest_folder_path" "false"
+
+      # Index 생성
+      generate_folder_index "$dest_folder_path"
+    fi
+  fi
 }
