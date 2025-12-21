@@ -43,6 +43,69 @@ copy_file() {
 }
 
 # ============================================================
+# 함수: Obsidian 임베드 이미지 추출 및 복사
+# 입력: $1 = 마크다운 파일
+#       $2 = DRY_RUN
+# ============================================================
+sync_obsidian_embed_images() {
+  local file="$1"
+  local dry_run="${2:-$DRY_RUN}"
+
+  # Obsidian 임베드 이미지 링크 추출: ![[image.png]] 또는 ![[image.png|width]] 형식
+  local embed_images
+  embed_images=$(grep -oP '!\[\[\K[^\]|]+' "$file" 2>/dev/null || true)
+
+  if [ -z "$embed_images" ]; then
+    return 0
+  fi
+
+  log_info "Found Obsidian embed images, searching and copying..."
+
+  while IFS= read -r img_name; do
+    [ -z "$img_name" ] && continue
+
+    # 이미지 파일 찾기 (Vault 내에서)
+    local img_abs_path=""
+
+    # 1. 현재 마크다운 파일 디렉토리에서 찾기
+    local file_dir
+    file_dir=$(dirname "$file")
+    if [ -f "$file_dir/$img_name" ]; then
+      img_abs_path="$file_dir/$img_name"
+    fi
+
+    # 2. attachments 폴더에서 찾기
+    if [ -z "$img_abs_path" ] && [ -f "$OBSIDIAN_VAULT/attachments/$img_name" ]; then
+      img_abs_path="$OBSIDIAN_VAULT/attachments/$img_name"
+    fi
+
+    # 3. 파일 이름으로 Vault 내 검색 (선택사항: 성능을 위해 비활성화 가능)
+    # if [ -z "$img_abs_path" ]; then
+    #   img_abs_path=$(find "$OBSIDIAN_VAULT" -name "$img_name" -type f 2>/dev/null | head -1)
+    # fi
+
+    # 파일 존재 확인
+    if [ ! -f "$img_abs_path" ]; then
+      log_warning "Obsidian embed image not found: $img_name"
+      continue
+    fi
+
+    local img_filename
+    img_filename=$(basename "$img_abs_path")
+
+    local dest_path="$CONTENT_DIR/$ATTACHMENTS_DEST/$img_filename"
+
+    if [ "$dry_run" = false ]; then
+      mkdir -p "$CONTENT_DIR/$ATTACHMENTS_DEST"
+      cp "$img_abs_path" "$dest_path"
+      log_success "  ✓ Copied: $img_filename"
+    else
+      log_info "[DRY-RUN] Would copy image: $img_filename"
+    fi
+  done <<< "$embed_images"
+}
+
+# ============================================================
 # 함수: 이미지 추출 및 복사
 # 입력: $1 = 마크다운 파일
 #       $2 = DRY_RUN
@@ -305,6 +368,7 @@ main() {
 
   log_section "Syncing Images"
   sync_images "$source_path" "$dry_run"
+  sync_obsidian_embed_images "$source_path" "$dry_run"
 
   # ============================================================
   # 5. References 동기화 (posts만)

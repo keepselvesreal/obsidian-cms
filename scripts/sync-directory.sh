@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # ============================================================
-# Sync Directory Script
+# Sync Directory Script (Final Version - Fixed)
 # 폴더 내의 모든 마크다운 파일을 CMS로 동기화합니다.
 # ============================================================
 
-set -euo pipefail
+set -u  # 선언되지 않은 변수 사용 시 에러
 
 # 스크립트 디렉토리
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -28,86 +28,110 @@ main() {
 
   log_section "Syncing Directory"
   log_info "Source: $source_folder"
+  log_info "Dry-Run: $dry_run"
 
   # ============================================================
   # 1. 유효성 검사
   # ============================================================
 
-  # 폴더 존재 여부
+  log_info "Validating folder..."
+
   if [ ! -d "$source_folder" ]; then
     log_error "Folder does not exist: $source_folder"
     exit 1
   fi
 
-  # Obsidian vault 내에 있는지 확인
   if [[ "$source_folder" != "$OBSIDIAN_VAULT"* ]]; then
     log_error "Folder must be inside Obsidian vault: $OBSIDIAN_VAULT"
     exit 1
   fi
 
-  # 폴더가 content 폴더 내에 있는지 확인
   if [[ "$source_folder" == "$CONTENT_DIR"* ]]; then
     log_error "Cannot sync folder from content folder: $source_folder"
     exit 1
   fi
 
+  log_success "Validation passed"
+
   # ============================================================
-  # 2. 폴더 내 모든 .md 파일 찾기
+  # 2. 폴더 내 마크다운 파일 찾기 및 동기화
   # ============================================================
 
-  log_info "Finding markdown files in folder..."
+  log_section "Finding and Syncing Markdown Files"
 
-  local md_files=()
-  while IFS= read -r md_file; do
-    md_files+=("$md_file")
-  done < <(find "$source_folder" -type f -name "*.md" | sort)
+  local success_count=0
+  local failed_count=0
+  local total_files=0
 
-  if [ ${#md_files[@]} -eq 0 ]; then
+  # 파일 개수 계산
+  total_files=$(find "$source_folder" -maxdepth 1 -type f -name "*.md" 2>/dev/null | wc -l)
+
+  if [ "$total_files" -eq 0 ]; then
     log_warning "No markdown files found in folder"
+    log_section "Sync Summary"
+    log_success "Completed: 0 files processed"
     exit 0
   fi
 
-  log_success "Found ${#md_files[@]} markdown file(s)"
+  log_success "Found $total_files markdown file(s)"
+  log_info "Starting sync process..."
 
-  # ============================================================
-  # 3. 각 파일 동기화
-  # ============================================================
+  # 임시 파일에 파일 목록 저장
+  local temp_file_list
+  temp_file_list=$(mktemp)
+  find "$source_folder" -maxdepth 1 -type f -name "*.md" 2>/dev/null | sort > "$temp_file_list"
 
-  log_section "Syncing Files"
+  # 각 파일 처리
+  local file_index=0
+  while IFS= read -r md_file; do
+    # 빈 라인 제외
+    [ -z "$md_file" ] && continue
 
-  local failed_count=0
-  local success_count=0
+    ((file_index++))
 
-  for md_file in "${md_files[@]}"; do
-    # 파일을 sync-single-file.sh로 동기화
+    local filename
+    filename=$(basename "$md_file")
+
+    log_info "[$file_index/$total_files] Syncing: $filename"
+
+    local sync_result=0
     if [ "$dry_run" = true ]; then
-      if "$SCRIPT_DIR/sync-single-file.sh" "$md_file" --dry-run; then
+      "$SCRIPT_DIR/sync-single-file.sh" "$md_file" --dry-run > /dev/null 2>&1 || sync_result=1
+      if [ "$sync_result" -eq 0 ]; then
+        log_success "  ✓ Processed (dry-run): $filename"
         ((success_count++))
       else
+        log_error "  ✗ Failed (dry-run): $filename"
         ((failed_count++))
-        log_error "Failed to process: $(basename "$md_file")"
       fi
     else
-      if "$SCRIPT_DIR/sync-single-file.sh" "$md_file"; then
+      "$SCRIPT_DIR/sync-single-file.sh" "$md_file" > /dev/null 2>&1 || sync_result=1
+      if [ "$sync_result" -eq 0 ]; then
+        log_success "  ✓ Synced: $filename"
         ((success_count++))
       else
+        log_error "  ✗ Failed: $filename"
         ((failed_count++))
-        log_error "Failed to sync: $(basename "$md_file")"
       fi
     fi
-  done
+  done < "$temp_file_list"
+
+  rm -f "$temp_file_list"
 
   # ============================================================
-  # 4. 결과 요약
+  # 3. 결과 요약
   # ============================================================
 
   log_section "Sync Summary"
+  log_info "Total files: $total_files"
+  log_info "Succeeded: $success_count"
+  log_info "Failed: $failed_count"
 
-  if [ $failed_count -gt 0 ]; then
-    log_error "Sync completed with errors: $success_count succeeded, $failed_count failed"
+  if [ "$failed_count" -gt 0 ]; then
+    log_error "Sync completed with errors"
     exit 1
   else
-    log_success "Sync completed successfully: $success_count file(s) synced"
+    log_success "Sync completed successfully"
     exit 0
   fi
 }

@@ -28,13 +28,13 @@ remove_obsidian_links() {
   frontmatter_lines=$(awk '/^---$/{count++; if(count==2){print NR; exit}}' "$file")
 
   if [ -z "$frontmatter_lines" ]; then
-    # 프론트매터가 없으면 본문 링크 제거 (앵커 링크는 유지)
-    # [[#...]] 앵커 링크는 유지, [[...]] 파일 링크만 제거
-    perl -pe 's/\[\[(?!#)[^\]]*\]\]//g' "$file" > "$temp_file"
+    # 프론트매터가 없으면 본문 링크 제거 (앵커 링크와 임베드 이미지는 유지)
+    # [[#...]] 앵커 링크는 유지, ![[...]] 임베드 이미지도 유지, [[...]] 파일 링크만 제거
+    perl -pe 's/(?<![!#])\[\[(?!#)[^\]]*\]\]//g' "$file" > "$temp_file"
   else
-    # 프론트매터 복사 + 본문 링크 제거 (앵커 링크는 유지)
+    # 프론트매터 복사 + 본문 링크 제거 (앵커 링크와 임베드 이미지는 유지)
     head -n "$frontmatter_lines" "$file" > "$temp_file"
-    tail -n +"$((frontmatter_lines + 1))" "$file" | perl -pe 's/\[\[(?!#)[^\]]*\]\]//g' >> "$temp_file"
+    tail -n +"$((frontmatter_lines + 1))" "$file" | perl -pe 's/(?<![!#])\[\[(?!#)[^\]]*\]\]//g' >> "$temp_file"
   fi
 
   mv "$temp_file" "$file"
