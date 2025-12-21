@@ -1,143 +1,334 @@
 #!/bin/bash
 
+# ============================================================
+# Sync Single File Script
+# 단일 마크다운 파일을 CMS로 동기화합니다.
+# ============================================================
+
 set -euo pipefail
 
-# 단일 파일 동기화 스크립트
-# 환경변수로 받는 공통 설정:
-#   SCRIPT_DIR, OBSIDIAN_VAULT, PUBLIC_DIR, DRY_RUN, AUTO_INCLUDE_LINKS, COPIED_FILES_TRACKER
+# 스크립트 디렉토리
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # 라이브러리 로드
 source "$SCRIPT_DIR/lib/logger.sh"
-source "$SCRIPT_DIR/lib/obsidian-image-extractor.sh"
-source "$SCRIPT_DIR/lib/image-copier.sh"
-source "$SCRIPT_DIR/lib/file-syncer.sh"
-source "$SCRIPT_DIR/lib/link-extractor.sh"
-source "$SCRIPT_DIR/lib/link-resolver.sh"
-source "$SCRIPT_DIR/lib/link-processor.sh"
-source "$SCRIPT_DIR/lib/find-in-public.sh"
-source "$SCRIPT_DIR/lib/link-updater.sh"
+source "$SCRIPT_DIR/lib/yaml-parser.sh"
+source "$SCRIPT_DIR/lib/link-remover.sh"
+source "$SCRIPT_DIR/config.sh"
 
-# 단일 파일 동기화 (이미지 + 링크 처리 포함)
-sync_single_file() {
+# ============================================================
+# 함수: 파일을 content로 복사
+# 입력: $1 = 원본 파일
+#       $2 = Destination 폴더 (content 내 상대 경로)
+#       $3 = DRY_RUN (true/false, 선택사항)
+# ============================================================
+copy_file() {
   local source="$1"
-  local dest="$2"
-  local dest_attachments="$PUBLIC_DIR/attachments"
+  local dest_folder="$2"
+  local dry_run="${3:-$DRY_RUN}"
 
-  log_section "Processing Single File: $(basename "$source")"
+  local filename
+  filename=$(basename "$source")
 
-  # 이미 복사된 파일인지 확인
-  if grep -q "^$(basename "$source")$" "$COPIED_FILES_TRACKER" 2>/dev/null; then
-    log_info "Already processed: $(basename "$source")"
-    return 0
-  fi
+  local dest_dir="$CONTENT_DIR/$dest_folder"
+  local dest_file="$dest_dir/$filename"
 
-  # 복사 표시
-  echo "$(basename "$source")" >> "$COPIED_FILES_TRACKER"
-
-  # 1단계: Obsidian 이미지 추출
-  log_info "Extracting images from file..."
-  local images=$(extract_obsidian_images "$source")
-
-  if [ -n "$images" ]; then
-    # 2단계: 이미지를 public/attachments로 복사
-    log_info "Copying images to public/attachments..."
-    local source_attachments="${SOURCE_ATTACHMENTS_DIR:-$OBSIDIAN_VAULT/resources/attachments}"
-
-    if [ "$DRY_RUN" = false ]; then
-      if copy_multiple_images "$images" "$source_attachments" "$dest_attachments"; then
-        log_success "Images copied successfully"
-      else
-        log_error "Failed to copy some images"
-        return 1
-      fi
-    else
-      log_info "[DRY-RUN] Would copy images to: $dest_attachments"
-    fi
+  if [ "$dry_run" = false ]; then
+    mkdir -p "$dest_dir"
+    cp "$source" "$dest_file"
+    log_success "Copied: $filename → $dest_folder/"
   else
-    log_info "No images found in file"
-  fi
-
-  # 3단계: 링크 추출 및 사용자 동의 확인 (파일 복사 전)
-  log_section "Checking for Linked Files"
-
-  local all_linked_files=$(collect_all_linked_files "$source" "$OBSIDIAN_VAULT")
-  local should_copy_linked_files=true
-
-  if [ -n "$all_linked_files" ]; then
-    log_info "Found linked files that will be copied:"
-
-    # 링크 목록 표시
-    echo "$all_linked_files" | while read -r linked_file; do
-      log_info "  - $(basename "$linked_file")"
-    done
-
-    # --auto-include-links가 없으면 사용자에게 묻기
-    if [ "$AUTO_INCLUDE_LINKS" = false ]; then
-      echo ""
-      read -p "이 파일들도 함께 복사하시겠습니까? (y/n): " user_input || user_input="n"
-
-      if [[ "$user_input" != "y" && "$user_input" != "Y" ]]; then
-        log_info "Skipping linked files copy"
-        should_copy_linked_files=false
-      fi
-    fi
-
-    if [ "$should_copy_linked_files" = true ]; then
-      log_info "User approved: Will include linked files"
-    fi
-  else
-    log_info "No linked files found"
-  fi
-
-  # 4단계: 주 파일 복사 (linked 파일 복사 여부와 무관하게)
-  log_info "Copying file to public folder..."
-  if [ "$DRY_RUN" = false ]; then
-    if ! sync_file "$source" "$dest" "false"; then
-      log_error "Failed to copy file"
-      return 1
-    fi
-    log_success "File copied successfully"
-  else
-    log_info "[DRY-RUN] Would copy file to: $dest"
-  fi
-
-  # 5단계: 링크된 파일들 복사 (재귀)
-  if [ -n "$all_linked_files" ] && [ "$should_copy_linked_files" = true ]; then
-    log_section "Copying Linked Files"
-
-    echo "$all_linked_files" | while read -r linked_file; do
-      # 링크된 파일의 상대 경로 계산
-      local linked_relative_path="${linked_file#$OBSIDIAN_VAULT/}"
-      local linked_relative_path="${linked_relative_path#*/}"  # 첫 세그먼트 제거
-      local linked_dest="$PUBLIC_DIR/$linked_relative_path"
-
-      if [ "$DRY_RUN" = false ]; then
-        "$SCRIPT_DIR/sync-single-file.sh" "$linked_file" "$linked_dest"
-      else
-        log_info "[DRY-RUN] Would sync linked file: $linked_file"
-      fi
-    done
-  fi
-
-  # 6단계: 링크 업데이트 (모든 linked 파일들이 public에 복사된 후)
-  log_section "Updating Links"
-  log_info "Updating links in copied file..."
-  if [ "$DRY_RUN" = false ]; then
-    if update_links_in_file "$dest" "$OBSIDIAN_VAULT" "$PUBLIC_DIR"; then
-      log_success "Links updated successfully"
-    else
-      log_warning "Some links could not be updated"
-    fi
-  else
-    log_info "[DRY-RUN] Would update links in: $dest"
+    log_info "[DRY-RUN] Would copy: $filename → $dest_folder/"
   fi
 }
 
-# 메인
-if [ $# -lt 2 ]; then
-  echo "Usage: $0 <SOURCE_PATH> <DEST_PATH>"
-  echo "Environment variables required: SCRIPT_DIR, OBSIDIAN_VAULT, PUBLIC_DIR, DRY_RUN, AUTO_INCLUDE_LINKS, COPIED_FILES_TRACKER"
+# ============================================================
+# 함수: 이미지 추출 및 복사
+# 입력: $1 = 마크다운 파일
+#       $2 = DRY_RUN
+# ============================================================
+sync_images() {
+  local file="$1"
+  local dry_run="${2:-$DRY_RUN}"
+
+  # 이미지 링크 추출: ![alt](path) 형식
+  local images
+  images=$(grep -oP '!\[.*?\]\(\K[^)]+' "$file" 2>/dev/null || true)
+
+  if [ -z "$images" ]; then
+    return 0
+  fi
+
+  log_info "Found images, copying to attachments..."
+
+  while IFS= read -r img_path; do
+    [ -z "$img_path" ] && continue
+
+    # 절대 경로로 변환 (상대 경로 기준: 파일의 디렉토리)
+    local file_dir
+    file_dir=$(dirname "$file")
+
+    local img_abs_path
+    img_abs_path=$(cd "$file_dir" && cd "$(dirname "$img_path")" && pwd)/$(basename "$img_path")
+
+    # 파일 존재 확인
+    if [ ! -f "$img_abs_path" ]; then
+      log_warning "Image not found: $img_abs_path"
+      continue
+    fi
+
+    local img_filename
+    img_filename=$(basename "$img_abs_path")
+
+    local dest_path="$CONTENT_DIR/$ATTACHMENTS_DEST/$img_filename"
+
+    if [ "$dry_run" = false ]; then
+      mkdir -p "$CONTENT_DIR/$ATTACHMENTS_DEST"
+      cp "$img_abs_path" "$dest_path"
+      log_success "  ✓ Copied: $img_filename"
+    else
+      log_info "[DRY-RUN] Would copy image: $img_filename"
+    fi
+  done <<< "$images"
+}
+
+# ============================================================
+# 함수: references 필드의 파일들 동기화
+# 입력: $1 = 마크다운 파일 (posts 폴더)
+#       $2 = DRY_RUN
+# ============================================================
+sync_referenced_files() {
+  local file="$1"
+  local dry_run="${2:-$DRY_RUN}"
+
+  # references 필드 추출
+  local references
+  references=$(extract_references "$file") || return 0  # references가 없으면 그냥 진행
+
+  if [ -z "$references" ]; then
+    log_info "No references field found"
+    return 0
+  fi
+
+  log_info "Processing references..."
+
+  while IFS= read -r reference; do
+    [ -z "$reference" ] && continue
+
+    # [[...]] 형식 처리
+    local normalized_ref
+    normalized_ref=$(extract_path_from_reference "$reference")
+
+    local file_path
+    if file_path=$(resolve_reference_to_file "$normalized_ref" "$OBSIDIAN_VAULT"); then
+      # normalized_ref는 "books/path" 형식
+      local source_type="${normalized_ref%%/*}"  # "books" 또는 "web-contents"
+
+      # 대응하는 destination 폴더 결정
+      local dest_folder=""
+      case "$source_type" in
+        books)
+          dest_folder="$BOOKS_DEST"
+          ;;
+        web-contents)
+          dest_folder="$WEB_CONTENTS_DEST"
+          ;;
+        *)
+          log_warning "Unknown reference type: $source_type"
+          continue
+          ;;
+      esac
+
+      # 파일 또는 폴더 여부 확인
+      if [ -f "$file_path" ]; then
+        # 파일: 이 파일만 동기화 (폴더 구조 유지)
+        if [ "$dry_run" = false ]; then
+          # 파일 복사 전 링크 제거
+          local temp_file
+          temp_file=$(mktemp)
+          cp "$file_path" "$temp_file"
+          remove_obsidian_links "$temp_file"
+
+          # 폴더 구조 유지: file_path에서 resources 이후 부분 추출
+          # /vault/resources/books/the-art-of-unit-testing/좋은-...md
+          # → the-art-of-unit-testing/좋은-...md
+          local relative_path="${file_path#*resources/}"
+          # 첫 번째 세그먼트 제거 (books/web-contents 등)
+          relative_path="${relative_path#*/}"
+          local dest_file="$CONTENT_DIR/$dest_folder/$relative_path"
+          mkdir -p "$(dirname "$dest_file")"
+          mv "$temp_file" "$dest_file"
+          log_success "  ✓ Synced: $(basename "$file_path")"
+        else
+          log_info "[DRY-RUN] Would sync file: $(basename "$file_path")"
+        fi
+
+      elif [ -d "$file_path" ]; then
+        # 폴더: 내부의 모든 .md 파일 동기화 (폴더 구조 유지)
+        log_info "Processing folder: $reference"
+
+        # normalized_ref에서 폴더명 추출 (books/the-art-of-unit-testing)
+        # the-art-of-unit-testing 부분
+        local folder_name="${normalized_ref#*/}"
+
+        local md_files
+        md_files=$(find "$file_path" -type f -name "*.md" | sort) || true
+
+        while IFS= read -r md_file; do
+          [ -z "$md_file" ] && continue
+
+          if [ "$dry_run" = false ]; then
+            # 파일 복사 전 링크 제거
+            local temp_file
+            temp_file=$(mktemp)
+            cp "$md_file" "$temp_file"
+            remove_obsidian_links "$temp_file"
+
+            # 폴더 구조 유지: content/books/the-art-of-unit-testing/...
+            local relative_path="${md_file#$file_path/}"
+            local dest_file="$CONTENT_DIR/$dest_folder/$folder_name/$relative_path"
+            mkdir -p "$(dirname "$dest_file")"
+            mv "$temp_file" "$dest_file"
+            log_success "  ✓ Synced: $folder_name/$(basename "$md_file")"
+          else
+            log_info "[DRY-RUN] Would sync: $(basename "$md_file")"
+          fi
+        done <<< "$md_files"
+      fi
+    else
+      log_warning "Reference file not found: $reference"
+    fi
+  done <<< "$references"
+}
+
+# ============================================================
+# 메인 함수
+# ============================================================
+main() {
+  local source_path="$1"
+  local dry_run=false
+
+  # --dry-run 옵션 처리
+  if [ $# -gt 1 ] && [ "$2" = "--dry-run" ]; then
+    dry_run=true
+  fi
+
+  log_section "Syncing Single File"
+  log_info "Source: $source_path"
+
+  # ============================================================
+  # 1. 유효성 검사
+  # ============================================================
+
+  # 파일 존재 여부
+  if [ ! -f "$source_path" ]; then
+    log_error "File does not exist: $source_path"
+    exit 1
+  fi
+
+  # Obsidian vault 내에 있는지 확인
+  if [[ "$source_path" != "$OBSIDIAN_VAULT"* ]]; then
+    log_error "File must be inside Obsidian vault: $OBSIDIAN_VAULT"
+    exit 1
+  fi
+
+  # 파일이 content 폴더 내에 있는지 확인
+  if [[ "$source_path" == "$CONTENT_DIR"* ]]; then
+    log_error "Cannot sync file from content folder: $source_path"
+    exit 1
+  fi
+
+  # ============================================================
+  # 2. 파일이 어느 폴더에 속하는지 판단
+  # ============================================================
+
+  local dest_folder=""
+
+  if [[ "$source_path" == *"$BOOKS_SOURCE"* ]]; then
+    dest_folder="$BOOKS_DEST"
+    log_info "Destination: $dest_folder (books)"
+  elif [[ "$source_path" == *"$WEB_CONTENTS_SOURCE"* ]]; then
+    dest_folder="$WEB_CONTENTS_DEST"
+    log_info "Destination: $dest_folder (web-contents)"
+  elif [[ "$source_path" == *"$POSTS_SOURCE"* ]]; then
+    dest_folder="$POSTS_DEST"
+    log_info "Destination: $dest_folder (posts)"
+  else
+    log_error "File is not in any recognized source folder"
+    log_error "Expected: $BOOKS_SOURCE, $WEB_CONTENTS_SOURCE, or $POSTS_SOURCE"
+    exit 1
+  fi
+
+  # ============================================================
+  # 3. 파일 복사
+  # ============================================================
+
+  log_section "Copying File"
+
+  # 원본 파일의 상대 경로 추출 (source type 이후부터)
+  local relative_path=""
+
+  if [[ "$source_path" == *"$BOOKS_SOURCE"* ]]; then
+    relative_path="${source_path#*$BOOKS_SOURCE/}"
+  elif [[ "$source_path" == *"$WEB_CONTENTS_SOURCE"* ]]; then
+    relative_path="${source_path#*$WEB_CONTENTS_SOURCE/}"
+  elif [[ "$source_path" == *"$POSTS_SOURCE"* ]]; then
+    relative_path="${source_path#*$POSTS_SOURCE/}"
+  fi
+
+  local dest_file="$CONTENT_DIR/$dest_folder/$relative_path"
+
+  if [ "$dry_run" = false ]; then
+    # 임시 파일 생성 (링크 제거 후)
+    local temp_file
+    temp_file=$(mktemp)
+    cp "$source_path" "$temp_file"
+
+    # 링크 제거
+    if has_obsidian_links "$temp_file"; then
+      log_info "Removing obsidian links..."
+      remove_obsidian_links "$temp_file"
+      log_success "Links removed"
+    fi
+
+    # 파일 복사
+    mkdir -p "$(dirname "$dest_file")"
+    mv "$temp_file" "$dest_file"
+    log_success "File copied: $relative_path"
+  else
+    log_info "[DRY-RUN] Would copy file with links removed: $relative_path"
+  fi
+
+  # ============================================================
+  # 4. 이미지 동기화
+  # ============================================================
+
+  log_section "Syncing Images"
+  sync_images "$source_path" "$dry_run"
+
+  # ============================================================
+  # 5. References 동기화 (posts만)
+  # ============================================================
+
+  if [[ "$dest_folder" == "$POSTS_DEST" ]]; then
+    log_section "Syncing References"
+    sync_referenced_files "$source_path" "$dry_run"
+  fi
+
+  log_success "File sync completed!"
+  return 0
+}
+
+# ============================================================
+# 스크립트 실행
+# ============================================================
+
+if [ $# -lt 1 ]; then
+  echo "Usage: $0 <SOURCE_FILE> [--dry-run]"
+  echo "Examples:"
+  echo "  $0 /path/to/resources/books/file.md"
+  echo "  $0 /path/to/resources/posts/post.md --dry-run"
   exit 1
 fi
 
-sync_single_file "$1" "$2"
+main "$@"
