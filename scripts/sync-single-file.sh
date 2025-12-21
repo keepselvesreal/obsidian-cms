@@ -16,6 +16,7 @@ source "$SCRIPT_DIR/lib/options-parser.sh"
 source "$SCRIPT_DIR/lib/path-resolver.sh"
 source "$SCRIPT_DIR/lib/error-handler.sh"
 source "$SCRIPT_DIR/lib/link-remover.sh"
+source "$SCRIPT_DIR/lib/reference-updater.sh"
 source "$SCRIPT_DIR/lib/image-handler.sh"
 source "$SCRIPT_DIR/lib/index-generator.sh"
 source "$SCRIPT_DIR/lib/reference-handler.sh"
@@ -51,6 +52,10 @@ copy_markdown_file() {
       remove_obsidian_links "$temp_file"
       log_success "Links removed"
     fi
+
+    # References 경로 변환 (CMS 경로로 업데이트)
+    log_info "Converting references to CMS paths..."
+    convert_references_to_cms_paths "$temp_file"
 
     # 파일 복사
     local dest_file

@@ -148,6 +148,10 @@ sync_referenced_file() {
     source "$SCRIPT_DIR/lib/link-remover.sh"
     remove_obsidian_links "$temp_file"
 
+    # References 경로 변환 (CMS 경로로 업데이트)
+    source "$SCRIPT_DIR/lib/reference-updater.sh"
+    convert_references_to_cms_paths "$temp_file"
+
     # 폴더 구조 유지: file_path에서 resources 이후 부분 추출
     local relative_path="${file_path#*resources/}"
     # 첫 번째 세그먼트 제거 (books/web-contents 등)
@@ -202,6 +206,10 @@ sync_referenced_folder() {
       cp "$md_file" "$temp_file"
       source "$SCRIPT_DIR/lib/link-remover.sh"
       remove_obsidian_links "$temp_file"
+
+      # References 경로 변환 (CMS 경로로 업데이트)
+      source "$SCRIPT_DIR/lib/reference-updater.sh"
+      convert_references_to_cms_paths "$temp_file"
 
       # 폴더 구조 유지
       local relative_path="${md_file#$folder_path/}"
