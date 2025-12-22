@@ -54,7 +54,7 @@ generate_folder_index() {
     echo ""
 
     if [ -n "$cover_image" ]; then
-      echo "![cover](./$cover_image)"
+      echo "<img src=\"./$cover_image\" width=\"${COVER_IMAGE_WIDTH:-300px}\" height=\"${COVER_IMAGE_HEIGHT:-450px}\" alt=\"cover\" style=\"border-radius: 8px; display: block; margin: 2rem auto 0;\" />"
       echo ""
     fi
   } > "$index_file"
