@@ -8,14 +8,6 @@
     {
       "source": "/en/attachments/:path*",
       "destination": "/attachments/:path*"
-    },
-    {
-      "source": "/en/:path*",
-      "destination": "/public-en/:path*"
-    },
-    {
-      "source": "/:path*",
-      "destination": "/public/:path*"
     }
   ]
 }
