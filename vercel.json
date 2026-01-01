@@ -3,5 +3,12 @@
   "outputDirectory": "public",
   "installCommand": "npm ci",
   "cleanUrls": true,
-  "trailingSlash": false
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/", "destination": "/ko/ko/index.html" },
+    { "source": "/en", "destination": "/en/en/index.html" },
+    { "source": "/en/:path*", "destination": "/en/:path*" },
+    { "source": "/ko", "destination": "/ko/ko/index.html" },
+    { "source": "/ko/:path*", "destination": "/ko/:path*" }
+  ]
 }
