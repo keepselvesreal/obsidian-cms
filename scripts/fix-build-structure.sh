@@ -20,8 +20,4 @@ if [ -d "public/ko/ko" ]; then
   rm -rf public/ko/ko
 fi
 
-# Copy root index.html from ko (default to Korean)
-echo "  Creating root index.html"
-cp public/ko/index.html public/index.html
-
 echo "✓ Build structure fixed"
