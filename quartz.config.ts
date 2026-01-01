@@ -8,12 +8,6 @@ import * as Plugin from "./quartz/plugins"
  *
  * See https://quartz.jzhao.xyz/configuration for more information.
  */
-
-// 빌드 언어 결정 (기본값: ko)
-const buildLanguage = process.env.BUILD_LANGUAGE || 'ko'
-const isEnglishBuild = buildLanguage === 'en'
-const isKoreanBuild = buildLanguage === 'ko'
-
 const config: QuartzConfig = {
   configuration: {
     pageTitle: "Knowledge Sherpa",
@@ -26,15 +20,9 @@ const config: QuartzConfig = {
         throw new Error("GOOGLE_ANALYTICS_ID environment variable is not set")
       })(),
     },
-    locale: isEnglishBuild ? "en-US" : "ko-KR",
+    locale: "en-US",
     baseUrl: "knowledge-sherpa.vercel.app",
-    ignorePatterns: [
-      "private",
-      "templates",
-      ".obsidian",
-      // 언어별 콘텐츠 필터링
-      ...(isEnglishBuild ? ["ko/**", "content/**"] : ["en/**", "content/**"]),
-    ],
+    ignorePatterns: ["private", "templates", ".obsidian"],
     defaultDateType: "modified",
     theme: {
       fontOrigin: "googleFonts",
