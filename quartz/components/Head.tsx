@@ -42,6 +42,7 @@ export default (() => {
     return (
       <head>
         <title>{title}</title>
+        {path && path !== "/" && <base href={path + "/"} />}
         <meta charSet="utf-8" />
         {cfg.theme.cdnCaching && cfg.theme.fontOrigin === "googleFonts" && (
           <>
