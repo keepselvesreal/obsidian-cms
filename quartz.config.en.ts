@@ -4,7 +4,7 @@ import { QuartzConfig } from "./quartz/cfg"
 import * as Plugin from "./quartz/plugins"
 
 /**
- * Quartz 4 Configuration
+ * Quartz 4 Configuration - English Version
  *
  * See https://quartz.jzhao.xyz/configuration for more information.
  */
@@ -20,8 +20,8 @@ const config: QuartzConfig = {
         throw new Error("GOOGLE_ANALYTICS_ID environment variable is not set")
       })(),
     },
-    locale: "ko-KR",
-    baseUrl: "knowledge-sherpa.vercel.app",
+    locale: "en-US",
+    baseUrl: "knowledge-sherpa.vercel.app/en",
     ignorePatterns: ["private", "templates", ".obsidian"],
     defaultDateType: "modified",
     theme: {

@@ -3,7 +3,6 @@ version: "1"
 note:
 created_date: 2025-12-19T10:52:00
 translator: Claude Haiku 4.5
-hasEnglishVersion: true
 ---
 
 ## Table of Contents

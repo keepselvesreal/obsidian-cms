@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+    <channel>
+      <title>Knowledge Sherpa</title>
+      <link>https://knowledge-sherpa.vercel.app/en</link>
+      <description>Last 10 notes on Knowledge Sherpa</description>
+      <generator>Quartz -- quartz.jzhao.xyz</generator>
+      <item>
+    <title>first-post</title>
+    <link>https://knowledge-sherpa.vercel.app/en/posts/first-post</link>
+    <guid>https://knowledge-sherpa.vercel.app/en/posts/first-post</guid>
+    <description><![CDATA[  Testing CMS synchronization Links that were included above should be deleted and not visible for proper operation References good-(unit)-test . ]]></description>
+    <pubDate>Thu, 01 Jan 2026 06:15:01 GMT</pubDate>
+  </item><item>
+    <title>posts</title>
+    <link>https://knowledge-sherpa.vercel.app/en/posts/</link>
+    <guid>https://knowledge-sherpa.vercel.app/en/posts/</guid>
+    <description><![CDATA[ 임시 진입점. ]]></description>
+    <pubDate>Thu, 01 Jan 2026 06:09:06 GMT</pubDate>
+  </item><item>
+    <title>the art of unit testing</title>
+    <link>https://knowledge-sherpa.vercel.app/en/books/the-art-of-unit-testing/</link>
+    <guid>https://knowledge-sherpa.vercel.app/en/books/the-art-of-unit-testing/</guid>
+    <description><![CDATA[  ]]></description>
+    <pubDate>Mon, 22 Dec 2025 00:57:45 GMT</pubDate>
+  </item><item>
+    <title>books</title>
+    <link>https://knowledge-sherpa.vercel.app/en/books/</link>
+    <guid>https://knowledge-sherpa.vercel.app/en/books/</guid>
+    <description><![CDATA[ 임시 진입점. ]]></description>
+    <pubDate>Mon, 22 Dec 2025 00:46:56 GMT</pubDate>
+  </item><item>
+    <title>Welcome to My Digital Garden</title>
+    <link>https://knowledge-sherpa.vercel.app/en/</link>
+    <guid>https://knowledge-sherpa.vercel.app/en/</guid>
+    <description><![CDATA[ This is my personal knowledge base published through Quartz. ]]></description>
+    <pubDate>Mon, 22 Dec 2025 00:46:56 GMT</pubDate>
+  </item><item>
+    <title>좋은-(단위)-테스트-en</title>
+    <link>https://knowledge-sherpa.vercel.app/en/books/the-art-of-unit-testing/%EC%A2%8B%EC%9D%80-(%EB%8B%A8%EC%9C%84)-%ED%85%8C%EC%8A%A4%ED%8A%B8-en</link>
+    <guid>https://knowledge-sherpa.vercel.app/en/books/the-art-of-unit-testing/%EC%A2%8B%EC%9D%80-(%EB%8B%A8%EC%9C%84)-%ED%85%8C%EC%8A%A4%ED%8A%B8-en</guid>
+    <description><![CDATA[ Table of Contents 1. Characteristics of Good Unit Tests 2. How to Write Good Tests 3. Unit Testing Checklist 4. Test Failure Response Process 1. ]]></description>
+    <pubDate>Sun, 21 Dec 2025 14:25:10 GMT</pubDate>
+  </item><item>
+    <title>도메인 주도 개발 시작하기</title>
+    <link>https://knowledge-sherpa.vercel.app/en/books/%EB%8F%84%EB%A9%94%EC%9D%B8-%EC%A3%BC%EB%8F%84-%EA%B0%9C%EB%B0%9C-%EC%8B%9C%EC%9E%91%ED%95%98%EA%B8%B0/</link>
+    <guid>https://knowledge-sherpa.vercel.app/en/books/%EB%8F%84%EB%A9%94%EC%9D%B8-%EC%A3%BC%EB%8F%84-%EA%B0%9C%EB%B0%9C-%EC%8B%9C%EC%9E%91%ED%95%98%EA%B8%B0/</guid>
+    <description><![CDATA[  ]]></description>
+    <pubDate>Sun, 21 Dec 2025 13:16:24 GMT</pubDate>
+  </item><item>
+    <title>테스트-첨부 이미지 동기화</title>
+    <link>https://knowledge-sherpa.vercel.app/en/books/%EB%8F%84%EB%A9%94%EC%9D%B8-%EC%A3%BC%EB%8F%84-%EA%B0%9C%EB%B0%9C-%EC%8B%9C%EC%9E%91%ED%95%98%EA%B8%B0/%ED%85%8C%EC%8A%A4%ED%8A%B8-%EC%B2%A8%EB%B6%80-%EC%9D%B4%EB%AF%B8%EC%A7%80-%EB%8F%99%EA%B8%B0%ED%99%94</link>
+    <guid>https://knowledge-sherpa.vercel.app/en/books/%EB%8F%84%EB%A9%94%EC%9D%B8-%EC%A3%BC%EB%8F%84-%EA%B0%9C%EB%B0%9C-%EC%8B%9C%EC%9E%91%ED%95%98%EA%B8%B0/%ED%85%8C%EC%8A%A4%ED%8A%B8-%EC%B2%A8%EB%B6%80-%EC%9D%B4%EB%AF%B8%EC%A7%80-%EB%8F%99%EA%B8%B0%ED%99%94</guid>
+    <description><![CDATA[  . ]]></description>
+    <pubDate>Sun, 21 Dec 2025 12:55:40 GMT</pubDate>
+  </item><item>
+    <title>요약-ch01-도메인-모델-시작하기</title>
+    <link>https://knowledge-sherpa.vercel.app/en/books/%EB%8F%84%EB%A9%94%EC%9D%B8-%EC%A3%BC%EB%8F%84-%EA%B0%9C%EB%B0%9C-%EC%8B%9C%EC%9E%91%ED%95%98%EA%B8%B0/%EC%9A%94%EC%95%BD-ch01-%EB%8F%84%EB%A9%94%EC%9D%B8-%EB%AA%A8%EB%8D%B8-%EC%8B%9C%EC%9E%91%ED%95%98%EA%B8%B0</link>
+    <guid>https://knowledge-sherpa.vercel.app/en/books/%EB%8F%84%EB%A9%94%EC%9D%B8-%EC%A3%BC%EB%8F%84-%EA%B0%9C%EB%B0%9C-%EC%8B%9C%EC%9E%91%ED%95%98%EA%B8%B0/%EC%9A%94%EC%95%BD-ch01-%EB%8F%84%EB%A9%94%EC%9D%B8-%EB%AA%A8%EB%8D%B8-%EC%8B%9C%EC%9E%91%ED%95%98%EA%B8%B0</guid>
+    <description><![CDATA[ 압축 내용 도메인 주도 개발은 소프트웨어가 해결해야 할 문제 영역인 도메인을 체계적으로 이해하고, 도메인 전문가와 개발자가 유비쿼터스 언어로 소통하여 도메인 모델을 도출한 후, 엔티티와 밸류로 구성된 객체 모델로 구현하는 것을 기반으로 한다. ]]></description>
+    <pubDate>Sun, 21 Dec 2025 12:06:06 GMT</pubDate>
+  </item>
+    </channel>
+  </rss>

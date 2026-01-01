@@ -1,0 +1,818 @@
+
+ * ▐▛███▜▌ *   Claude Code v2.0.74
+* ▝▜█████▛▘ *  Haiku 4.5 · Claude Pro
+ *  ▘▘ ▝▝  *   ~/para/projects/content-management-system
+
+> '/home/nadle/para/projects/content-management-system/content/index.md' 
+수정하고 싶어. 현재 tests-note-1, 2 대신 books, posts가 표시되고 해당 글자 
+클릭하면 각 폴더 화면으로 바로 이동하는 링크가가 있었으면 
+
+● Read(content/index.md)
+  ⎿  Read 13 lines
+
+● Bash(ls -la /home/nadle/para/projects/content-management-system/content/ |
+      grep -E "^d")
+  ⎿  drwxr-xr-x  6 nadle nadle 4096 12월 21 20:25 .          
+     drwxrwxr-x 13 nadle nadle 4096 12월 21 23:44 ..
+     drwxr-xr-x  2 nadle nadle 4096 12월 21 21:55 attachments
+     … +3 lines (ctrl+o to expand)
+
+● Bash(ls -la /home/nadle/para/projects/content-management-system/content/books/
+       && echo "---" && ls -la
+      /home/nadle/para/projects/content-management-system/content/po…)
+  ⎿  합계 16                                       
+     drwxrwxr-x 4 nadle nadle 4096 12월 21 23:22 .
+     drwxr-xr-x 6 nadle nadle 4096 12월 21 20:25 ..
+     … +7 lines (ctrl+o to expand)
+
+● Update(content/index.md)
+  ⎿  Added 2 lines, removed 2 lines                                      
+       5  This is my personal knowledge base published through Quartz.
+       6  
+       7  ## Quick Links
+       8 -- [[test-note-1]]                                              
+       9 -- [[test-note-2]]                                              
+       8 +- [[books]]                                                    
+       9 +- [[posts]]                                                    
+      10  
+      11  ## About
+      12  This is a test of the Obsidian + Quartz + GitHub + Netlify publ
+          ishing system.
+
+● 완료했습니다! index.md를 수정해서 test-note-1, test-note-2 대신 books, posts 링크로 변경했습니다.
+
+  추가 개선사항: 각 폴더로 이동할 때 더 나은 경험을 위해 폴더별 index.md 파일을 만들고 싶으신가요? 예를 들어:
+  - /content/books/index.md - 책 목록 페이지
+  - /content/posts/index.md - 게시물 목록 페이지
+
+  이렇게 하면 [[books]]를 클릭할 때 각 폴더의 인덱스 페이지로 바로 이동할 수 있습니다.
+
+> 헤더 적용하려려면 - ### [[books]] 식으으로 하면 돼? 
+  ⎿  ⧉ Selected 1 lines from content/index.md in Visual Studio Code
+
+● 아니요, 마크다운에서는 리스트 기호(-)와 헤더(###)를 섞어서 사용하면 안 됩니다.
+
+  올바른 방식:
+
+  헤더로 사용하려면:
+  ### [[books]]
+  ### [[posts]]
+
+  또는 리스트로 유지하되 더 시각적으로 만들고 싶으면:
+  ## Quick Links
+  - [[books]]
+  - [[posts]]
+
+  현재 상황에 맞게 원하시는 스타일을 알려주시면 수정해드리겠습니다. 헤더로 변경하실 건가요?
+
+> 너 말처럼 수정했는데 안되는데? 그냥 링크로만 표시되고 글자 크기 여전히 
+일반 글자 크기와 동일 ## Quick Links
+### [[books]]
+구구절절 대신 핵심만 쏙쏙
+
+### [[posts]]
+나의 시행착오가 너의 밑거름이 되길## Quick Links
+### [[books]]
+구구절절 대신 핵심만 쏙쏙
+
+### [[posts]]
+나의 시행착오가 너의 밑거름이 되길 
+  ⎿  ⧉ Selected 6 lines from content/index.md in Visual Studio Code
+
+● 아, 이것은 Quartz의 위키링크([[]]) 처리 방식 때문입니다. Quartz에서는 [[]] 형태의 링크를 특별하게 처리하면서 마크다운 헤더 스타일이 제대로 적용되지 않을 수 있습니다.
+
+  해결 방법:
+
+  일반 마크다운 링크 형식으로 변경하면 헤더가 제대로 렌더링됩니다:
+
+  ## Quick Links
+
+  ### [books](./books/)
+  구구절절 대신 핵심만 쏙쏙
+
+  ### [posts](./posts/)
+  나의 시행착오가 너의 밑거름이 되길
+
+  이렇게 수정해드릴까요? 이 방식이면:
+  - ### 헤더 스타일이 제대로 적용됨
+  - 클릭하면 해당 폴더로 이동
+  - 설명 글도 함께 표시됨
+
+> 여전히 적용 안되는데? 
+
+● Read(content/index.md)
+  ⎿  Read 15 lines
+
+● 파일은 이미 마크다운 링크로 잘 수정되어 있는데 렌더링이 안 되는군요. 몇 가지 확인이 필요합니다:
+
+  1. Quartz 빌드 재실행: 프로젝트를 다시 빌드했나요?
+  npm run build
+  2. 브라우저 캐시 제거: Ctrl+Shift+R (또는 Cmd+Shift+R)로 강제 새로고침
+  3. 빌드 구성 확인: Quartz의 quartz.config.ts 파일에서 마크다운 렌더링 설정을 확인해볼 필요가 있습니다.
+
+  혹시 Quartz 설정이나 빌드 프로세스를 봐도 될까요?
+
+> 응 
+
+● Bash(find /home/nadle/para/projects/content-management-system -name
+      "quartz.config.*" -o -name "quartz.config.*")
+  ⎿  /home/nadle/para/projects/content-management-system/quartz.config.ts
+
+● Read(quartz.config.ts)
+  ⎿  Read 103 lines
+
+● Read(package.json)
+  ⎿  Read 118 lines
+
+● 빌드 명령어를 찾았습니다. 현재 상태를 확인하고 빌드를 다시 실행해봅시다:
+
+● Bash(npm run build 2>&1 | head -100)
+  ⎿  Interrupted · What should Claude do instead?
+
+> 아 아니다. ## Quick Links
+## [[books]] 해도 되네. 현재 검색바 상단의 Knowledge Sherpa 이름이 두 줄로 
+표시되는데, 아마 글자 크기 때문에에 그런 것 같아. 한 줄로 표시되게 하려면 
+어떻게 해야해? 
+  ⎿  ⧉ Selected 2 lines from content/index.md in Visual Studio Code
+
+● Quartz의 헤더 스타일 문제네요. 몇 가지 확인이 필요합니다:
+
+● Bash(find /home/nadle/para/projects/content-management-system -name "*.css" -o
+       -name "*.scss" | grep -E "(style|header|title)" | head -20)
+  ⎿ /home/nadle/para/projects/content-management-system/node_modules/katex/
+    src/styles/fonts.scss
+    /home/nadle/para/projects/content-management-system/node_modules/katex/
+    … +37 lines (ctrl+o to expand)
+
+
+
+● Read(quartz/components/styles/search.scss)
+  ⎿  Read 243 lines
+
+● Header 컴포넌트를 확인해봐야 할 것 같습니다:
+
+● Bash(find
+      /home/nadle/para/projects/content-management-system/quartz/components
+      -name "*Header*" -o -name "*header*")
+  ⎿ /home/nadle/para/projects/content-management-system/quartz/components/H
+    eader.tsx
+
+
+● Read(quartz/components/Header.tsx)
+  ⎿  Read 23 lines
+
+● Bash(find
+      /home/nadle/para/projects/content-management-system/quartz/components
+      -name "*Title*" -o -name "*title*")
+  ⎿ /home/nadle/para/projects/content-management-system/quartz/components/A
+    rticleTitle.tsx
+    /home/nadle/para/projects/content-management-system/quartz/components/P
+    ageTitle.tsx
+
+
+
+● Read(quartz/components/PageTitle.tsx)
+  ⎿  Read 25 lines
+
+● 찾았습니다! PageTitle.tsx에서 .page-title의 font-size가 1.75rem으로 설정되어 있어서 너비가 부족해 두 줄로 표시되는 것 같습니다.
+
+  해결 방법 3가지:
+
+  1. 가장 간단 - 한 줄로 유지하기:
+  .page-title {
+    font-size: 1.75rem;
+    margin: 0;
+    font-family: var(--titleFont);
+    white-space: nowrap;
+  }
+  2. 글자 크기 줄이기:
+  font-size: 1.5rem;  /* 1.75rem 대신 */
+  3. 글자 크기는 유지하되 더 작게:
+  font-size: 1.6rem;
+  white-space: nowrap;
+
+  어떤 방식으로 하실래요?
+
+> 1, 2의 차이는? 
+
+● 1번 (white-space: nowrap):
+  - 글자 크기: 그대로 1.75rem (큼)
+  - 강제로 한 줄 유지
+  - 공간이 부족하면 텍스트가 오른쪽으로 흘러넘칠 수 있음
+  - "Knowledge Sherpa"가 길어서 상자를 벗어날 가능성 있음
+
+  2번 (font-size 줄이기):
+  - 글자 크기: 1.5rem (약간 작음)
+  - 자연스럽게 한 줄에 들어감
+  - 레이아웃 안정적이고 깔끔함
+
+  추천: 2번이 나아요. 글자 크기는 조금만 줄어들지만 안정적으로 한 줄에 표시되고, 흘러넘침 문제 없습니다.
+
+  실제로 해볼까요?
+
+> 응 2번 적용해줘 
+
+● Update(quartz/components/PageTitle.tsx)
+  ⎿  Added 1 line, removed 1 line                                        
+      15  
+      16  PageTitle.css = `
+      17  .page-title {
+      18 -  font-size: 1.75rem;                                          
+      18 +  font-size: 1.5rem;                                           
+      19    margin: 0;
+      20    font-family: var(--titleFont);
+      21  }
+
+● 완료했습니다! font-size를 1.75rem에서 1.5rem으로 변경했습니다.
+
+  이제 빌드를 다시 실행하면 "Knowledge Sherpa"가 한 줄로 표시될 거예요.
+
+> '/home/nadle/para/projects/content-management-system/content/books/the-art
+-of-unit-testing/좋은-(단위)-테스트.md'에는 우측에 toc 섹션에서 각 항목 
+클릭하면 페이지의 해당 부분으로 이동되ㄱ거든. 근데 
+'/home/nadle/para/projects/content-management-system/content/index.md'경우 
+헤더들이 모두 목차 섹션에 표시는 되지만, 링크크 연결된 books, posts 경우도 
+해당 목차 섹션의 이 글자 눌러도 폴더 페이지로 이동되지 않아. 그냥 본문에서 
+books와 posts 글자 클릭했을 땐 이동되지만. 해결방법이 있어? 
+  ⎿  ⧉ Selected 2 lines from content/index.md in Visual Studio Code
+
+● Read(content/index.md)
+  ⎿  Read 16 lines
+
+● 아, 현재 ## [[books]] 위키링크 형태라서 TOC가 제대로 처리하지 못하는 것 같습니다.
+
+  마크다운 링크로 변경하면 TOC도 제대로 작동할 거예요:
+
+● Update(content/index.md)
+  ⎿  Added 5 lines, removed 4 lines                                      
+       5  This is my personal knowledge base published through Quartz.
+       6  
+       7  ## Quick Links
+       8 -## [[books]]                                                   
+       9 -- 구구절절 대신 핵심만 쏙쏙                                    
+       8  
+      11 -## [[posts]]                                                   
+      12 -- 나의 시행착오가 너의 밑거름이 되길                           
+       9 +## [books](./books/)                                           
+      10 +구구절절 대신 핵심만 쏙쏙                                      
+      11  
+      12 +## [posts](./posts/)                                           
+      13 +나의 시행착오가 너의 밑거름이 되길                             
+      14 +                                                               
+      15  ## About
+      16  This is a test of the Obsidian + Quartz + GitHub + Netlify publ
+          ishing system.
+
+● 완료했습니다! ## [[books]] 형태에서 ## [books](./books/) 마크다운 링크로 변경했습니다.
+
+  이제 우측 TOC 섹션의 "books", "posts" 항목을 클릭하면 정상적으로 해당 폴더 페이지로 이동할 거예요.
+
+> 여전히 우측의 table of contents의 books, posts 눌렀ㅇ을 때는 이동이 안돼 
+  ⎿  [Image #1]
+  ⎿  ⧉ Selected 7 lines from content/index.md in Visual Studio Code
+
+● 이것은 Quartz의 TOC 플러그인이 헤더 안의 마크다운 링크를 제대로 처리하지 못해서 생기는 문제입니다.
+
+  해결 방법:
+
+  헤더와 링크를 분리하면 됩니다:
+
+  ## Quick Links
+
+  ### books
+  구구절절 대신 핵심만 쏙쏙 → [이동](./books/)
+
+  ### posts
+  나의 시행착오가 너의 밑거름이 되길 → [이동](./posts/)
+
+  이렇게 하면:
+  - TOC의 "books", "posts"를 클릭하면 페이지 내 해당 헤더로 이동 (현재는 링크가 없어서 안 되지만, 화면에는 표시됨)
+  - 본문의 "이동" 링크를 클릭하면 폴더로 이동
+
+  또는 다른 방식으로 하려면:
+
+  ### [books](./books/)
+  구구절절 대신 핵심만 쏙쏙
+
+  ### [posts](./posts/)
+  나의 시행착오가 너의 밑거름이 되길
+
+  이렇게 하되, TOC 설정을 변경해야 할 수도 있습니다.
+
+  어느 방식이 더 마음에 드세요?
+
+> 폴더라 이동이 안되는 건 아냐? 
+
+● Bash(ls -la /home/nadle/para/projects/content-management-system/content/books/
+       && echo "---" && ls -la
+      /home/nadle/para/projects/content-management-system/content/po…)
+  ⎿  합계 16                                       
+     drwxrwxr-x 4 nadle nadle 4096 12월 21 23:22 .
+     drwxr-xr-x 6 nadle nadle 4096 12월 22 09:34 ..
+     … +8 lines (ctrl+o to expand)
+
+● 아! 발견했어요. /books/ 폴더에는 index.md가 없습니다. /posts/에만 있네요.
+
+  Quartz가 폴더 페이지를 제대로 생성하려면 각 폴더에 index.md가 있어야 합니다.
+
+● Read(content/posts/index.md)
+  ⎿  Read 1 line
+
+● /books/ 폴더에 index.md를 생성하면 해결될 거예요:
+
+● Write(content/books/index.md)
+  ⎿  Wrote 1 lines to content/books/index.md
+      1 책
+
+● 완료했습니다! /books/ 폴더에 index.md를 생성했습니다.
+
+  이제 빌드하면 TOC의 "books" 항목이나 본문의 "books" 링크를 클릭했을 때 폴더 페이지로 이동할 수 있을 거예요.
+
+> 검색해서 quartz에서 table of content 항목에에 폴더 이름이 링크로 포함함될 
+때 해당 폴더로 이동되는 법 알아봐줘. 보통은 table of content는 현재 페이지의
+ 특정 섹션으로 이동하는 걸 가정할 거 아냐 
+
+● Web Search("Quartz table of contents external link navigation folder 2025")
+  ⎿  Did 1 search in 10s                                                   
+
+● Fetch(https://quartz.jzhao.xyz/plugins/TableOfContents)
+  ⎿  Received 31.4KB (200 OK)
+
+● Fetch(https://quartz.jzhao.xyz/features/folder-and-tag-listings)
+  ⎿  Received 33.8KB (200 OK)
+
+● 검색 결과:
+
+  Quartz의 TOC(Table of Contents)는 현재 페이지 내의 헤더 섹션 이동만 지원합니다. 외부 링크(폴더 이동 등)를 지원하도록 설계되지 않았습니다.
+
+  당신이 맞습니다 - TOC는 기본적으로 같은 페이지의 특정 섹션으로 이동하는 것을 가정합니다.
+
+  Quartz에서 제공하는 해결책:
+
+  1. 위키링크 문법 사용 (권장):
+  ## [[books/]]
+  구구절절 대신 핵심만 쏙쏙
+    - [[books/]] (마지막에 /) 문법으로 폴더를 직접 참조
+  2. 현실적인 해결책:
+    - TOC는 "Quick Links", "books", "posts", "About" 같은 섹션으로 표시되지만 외부 링크로 이동하지 못함
+    - 대신 본문의 "books" 텍스트 자체를 클릭하도록 유도하거나
+    - TOC를 비활성화하고 커스텀 네비게이션 만들기
+
+  현재 상황에서는 TOC가 폴더 이동을 지원하지 않으므로, TOC에서 "books" 클릭해도 내부 앵커를 찾아서 작동하지 않는 게 정상입니다.
+
+  Sources:
+  - https://quartz.jzhao.xyz/plugins/TableOfContents
+  - https://quartz.jzhao.xyz/features/folder-and-tag-listings
+
+> - 특정 페이지에서만 toc 비활성화 가능? 
+
+● Web Search("Quartz disable table of contents specific page frontmatter")
+  ⎿  Did 1 search in 8s                                                    
+
+● 네, 가능합니다!
+
+  특정 페이지에서 TOC 비활성화:
+
+  index.md 파일의 frontmatter에 enableToc: false를 추가하면 됩니다:
+
+  ---
+  title: "Welcome to My Digital Garden"
+  enableToc: false
+  ---
+
+  This is my personal knowledge base published through Quartz.
+  ...
+
+  이렇게 하면:
+  - /content/index.md 페이지에서만 TOC가 숨겨짐
+  - 다른 페이지들은 TOC가 정상적으로 표시됨
+  - TOC로 인한 혼동 없이 본문의 "books", "posts" 링크만 사용
+
+  원한다면 /content/index.md에 이 설정을 추가해드릴까요?
+
+  Sources:
+  - https://quartz.jzhao.xyz/features/table-of-contents
+  - https://quartz.jzhao.xyz/plugins/TableOfContents
+
+> 그래프 뷰 비활성화 법은? 
+  ⎿  ⧉ Selected 5 lines from content/posts/index.md in Visual Studio Code
+
+● Web Search("Quartz disable graph view frontmatter or config")
+  ⎿  Did 1 search in 8s                                                    
+
+● 그래프 뷰를 비활성화하려면 quartz.layout.ts 파일을 수정해야 합니다.
+
+● Bash(find /home/nadle/para/projects/content-management-system -name
+      "quartz.layout.ts")
+  ⎿  /home/nadle/para/projects/content-management-system/quartz.layout.ts
+
+● Read(quartz.layout.ts)
+  ⎿  Read 69 lines
+
+● 찾았어요! 44번 줄에 Component.Graph()가 있습니다.
+
+  전체 사이트에서 그래프 뷰 비활성화:
+
+  right: [
+    // Component.Graph(),  // ← 이 줄을 제거하거나 주석 처리
+    Component.DesktopOnly(Component.TableOfContents()),
+    Component.Backlinks(),
+  ],
+
+  적용해드릴까요?
+
+  Sources:
+  - https://quartz.jzhao.xyz/features/graph-view
+  - https://quartz.jzhao.xyz/configuration
+
+> 특정 페이지에서만 비활성화화하고 싶어 
+
+● Web Search("Quartz disable graph per page frontmatter enableGraph")
+  ⎿  Did 1 search in 9s                                                    
+
+● frontmatter로는 직접 지원되지 않는 것 같습니다. 하지만 quartz.layout.ts에서 ConditionalRender 컴포넌트를 사용하면 특정 페이지에서만 그래프를 비활성화할 수 있습니다.
+
+  해결 방법:
+
+  특정 페이지(예: index 페이지)에서만 그래프를 비활성화하려면:
+
+  right: [
+    Component.ConditionalRender({
+      component: Component.Graph(),
+      condition: (page) => page.fileData.slug !== "index",  // index 페이지에서는 숨김
+    }),
+    Component.DesktopOnly(Component.TableOfContents()),
+    Component.Backlinks(),
+  ],
+
+  이렇게 하면 index 페이지에서는 그래프가 나타나지 않고, 다른 페이지에서는 정상적으로 표시됩니다.
+
+  적용해드릴까요?
+
+  Sources:
+  - https://quartz.jzhao.xyz/configuration
+  - https://quartz.jzhao.xyz/features/graph-view
+
+> 커밋 메시지 제안해줘 
+
+● 현재 상태를 확인한 후 커밋 메시지를 제안해드리겠습니다:
+
+● Bash(git status && echo "---" && git diff --stat)
+  ⎿  현재 브랜치 main                                           
+     브랜치가 'origin/main'보다 1개 커밋만큼 앞에 있습니다.
+       (로컬에 있는 커밋을 제출하려면 "git push"를 사용하십시오)
+     … +23 lines (ctrl+o to expand)
+
+● Bash(git diff content/index.md && echo "---" && git diff
+      quartz/components/PageTitle.tsx)
+  ⎿  diff --git a/content/index.md b/content/index.md
+     index 050865b..7ce4d85 100644
+     --- a/content/index.md
+     … +37 lines (ctrl+o to expand)
+
+● 변경 사항 요약:
+  - 홈페이지 Quick Links를 test-note → books/posts로 변경
+  - 홈페이지 TOC 비활성화 (enableToc: false)
+  - PageTitle 글자 크기 조정 (1.75rem → 1.5rem)
+
+  제안:
+
+  1. 간결한 버전:
+  refactor: 홈페이지 Quick Links 업데이트 및 PageTitle 글자 크기 조정
+  2. 상세한 버전:
+  refactor: 홈페이지 Quick Links를 books/posts로 변경 및 페이지 제목 스타일 개선
+
+  - Quick Links 섹션을 test-note에서 books/posts로 업데이트
+  - 홈페이지 TOC 비활성화
+  - PageTitle 글자 크기 1.75rem → 1.5rem으로 조정하여 한 줄 표시
+
+  어느 방식으로 할래요?
+
+> 상세 버전 
+
+● Bash(git add content/index.md quartz/components/PageTitle.tsx
+      content/books/index.md && git commit -m "refactor: 홈페이지 Quick Links를
+      books/posts로 변경 및 페이지 제목 스타일 개선…)
+  ⎿ [main 54bff85] refactor: 홈페이지 Quick Links를 books/posts로 변경 및  
+    페
+    이지 제목 스타일 개선
+     3 files changed, 11 insertions(+), 3 deletions(-)
+    … +15 lines (ctrl+o to expand)
+
+● 완료했습니다! 커밋이 성공적으로 생성되었습니다.
+
+  [main 54bff85] refactor: 홈페이지 Quick Links를 books/posts로 변경 및 페이지 제목 스타일 개선
+   3 files changed, 11 insertions(+), 3 deletions(-)
+   create mode 100644 content/books/index.md
+
+  변경 사항:
+  - content/index.md 수정
+  - quartz/components/PageTitle.tsx 수정
+  - content/books/index.md 생성
+
+  현재 main 브랜치가 origin/main보다 2개 커밋 앞서 있습니다.
+
+> '/home/nadle/para/projects/content-management-system/scripts' 각 폴더에 
+cover.png 있는 경우 폴더의 index.md 파일에 cover 이미지 삽입할 때 크기를 
+조정하고 싶어. 
+'/home/nadle/para/projects/content-management-system/scripts/config.sh'에 
+크기를 내가 설정하면 그게 적용되게 할 수 있을까? 
+
+● Read(scripts/config.sh)
+  ⎿  Read 42 lines
+
+● Bash(ls -la /home/nadle/para/projects/content-management-system/scripts/)
+  ⎿  합계 52                                        
+     drwxrwxr-x  3 nadle nadle 4096 12월 21 22:25 .
+     drwxrwxr-x 13 nadle nadle 4096 12월 22 09:43 ..
+     … +7 lines (ctrl+o to expand)
+
+● Bash(grep -r "cover"
+      /home/nadle/para/projects/content-management-system/scripts/)
+  ⎿ /home/nadle/para/projects/content-management-system/scripts/sync-direct
+    ory.sh:        sync_cover_image "$source_folder" "$dest_folder_path" "$
+    dry_run"
+    … +38 lines (ctrl+o to expand)
+
+
+
+● Read(scripts/lib/index-generator.sh)
+  ⎿  Read 83 lines
+
+● 네, 가능합니다! config.sh에 cover 이미지 크기 설정을 추가하고, lib/index-generator.sh에서 그 설정을 적용하면 됩니다.
+
+  구체적으로는:
+
+  1. config.sh에 설정 추가:
+  # ============================================================
+  # Cover Image 설정
+  # ============================================================
+  COVER_IMAGE_WIDTH="300px"   # 원하는 너비
+  COVER_IMAGE_HEIGHT="auto"   # 원하는 높이
+  2. index-generator.sh에서 설정값을 읽어서 사용:
+  # 현재: ![cover](./$cover_image)
+  # 변경: <img src="./$cover_image" width="$COVER_IMAGE_WIDTH" height="$COVER_IMAGE_HEIGHT" />
+
+  이렇게 하면 config.sh에서 크기를 바꾸면 모든 폴더의 index.md에 자동으로 적용됩니다.
+
+  적용해드릴까요?
+
+> 보통 웹에서 책 표지 같은 이미지지 제시할 때 사용하는 크기로로 설설정해서서
+ 적용해줘 
+
+● Update(scripts/config.sh)
+  ⎿  Added 8 lines                                                       
+      33  MAX_LINK_DEPTH=5
+      34  
+      35  # ============================================================
+      36 +# Cover Image 설정                                             
+      37 +# ============================================================ 
+      38 +                                                               
+      39 +# Cover 이미지 크기 (책 표지 크기)                             
+      40 +COVER_IMAGE_WIDTH="300px"                                      
+      41 +COVER_IMAGE_HEIGHT="450px"                                     
+      42 +                                                               
+      43 +# ============================================================ 
+      44  # 실행 모드 옵션
+      45  # ============================================================
+      46  
+
+● 이제 index-generator.sh를 수정하겠습니다:
+
+● Update(scripts/lib/index-generator.sh)
+  ⎿  Added 1 line, removed 1 line                                        
+      54      echo ""
+      55  
+      56      if [ -n "$cover_image" ]; then
+      57 -      echo "![cover](./$cover_image)"                          
+      57 +      echo "<img src=\"./$cover_image\" width=\"${COVER_IMAGE_W
+         +IDTH:-300px}\" height=\"${COVER_IMAGE_HEIGHT:-450px}\" alt=\"co
+         +ver\" style=\"border-radius: 8px;\" />"                        
+      58        echo ""
+      59      fi
+      60    } > "$index_file"
+
+● 완료했습니다!
+
+  변경 사항:
+
+  1. config.sh: 책 표지 표준 크기 추가
+    - 너비: 300px
+    - 높이: 450px (일반적인 책 표지 비율 3:4)
+  2. index-generator.sh: HTML img 태그 사용
+    - config.sh의 설정값 적용
+    - 모서리를 둥글게 표시 (border-radius: 8px)
+    - 웹 접근성을 위한 alt 텍스트 추가
+
+  이제부터 생성되는 모든 index.md의 cover 이미지가 이 크기로 표시되며, 필요하면 config.sh에서 크기만 수정하면 됩니다!
+
+> '/home/nadle/para/projects/content-management-system/content/books/the-art
+-of-unit-testing' 삭제 후 다시 동기화해서 동작 확인하게 해줘 
+
+● Bash(rm -rf /home/nadle/para/projects/content-management-system/content/books/
+      the-art-of-unit-testing && echo "폴더 삭제 완료" && ls -la
+      /home/nadle/para/projects/content-…)
+  ⎿  폴더 삭제 완료                               
+     합계 16
+     drwxrwxr-x 3 nadle nadle 4096 12월 22 09:51 .
+     … +3 lines (ctrl+o to expand)
+
+● 이제 동기화 스크립트를 실행합니다:
+
+● Bash(bash scripts/sync-obsidian-to-cms.sh 2>&1 | head -100)
+  ⎿  Usage: ./sync-obsidian-to-cms.sh <SOURCE> [OPTIONS]
+
+     Arguments:
+     … +33 lines (ctrl+o to expand)
+
+● Bash(bash scripts/sync-obsidian-to-cms.sh
+      resources/books/the-art-of-unit-testing)
+  ⎿ ========== Sync Obsidian to CMS ==========                             
+
+    [2025-12-22 09:51:44] [INFO] Source (relative): resources/books/the-art
+    … +48 lines (ctrl+o to expand)
+
+
+● 완료했습니다! 동기화가 성공적으로 진행되었습니다. 이제 생성된 index.md를 확인해봅시다:
+
+● Read(content/books/the-art-of-unit-testing/index.md)
+  ⎿  Read 8 lines
+
+● 완벽하게 동작합니다! ✓
+
+  확인 사항:
+  - ✓ Cover 이미지 크기 300px × 450px 적용됨
+  - ✓ border-radius: 8px 스타일 적용됨 (모서리 둥글게)
+  - ✓ 영어 버전 감지됨 (hasEnglishVersion: true)
+  - ✓ cover.png 파일 복사됨
+
+  이제 다른 폴더들도 같은 방식으로 cover 이미지가 설정한 크기로 표시될 거예요!
+
+> 가운데 정렬되게 해줘 
+
+● Update(scripts/lib/index-generator.sh)
+  ⎿  Added 1 line, removed 1 line                                        
+      54      echo ""
+      55  
+      56      if [ -n "$cover_image" ]; then
+      57 -      echo "<img src=\"./$cover_image\" width=\"${COVER_IMAGE_W
+         -IDTH:-300px}\" height=\"${COVER_IMAGE_HEIGHT:-450px}\" alt=\"co
+         -ver\" style=\"border-radius: 8px;\" />"                        
+      57 +      echo "<img src=\"./$cover_image\" width=\"${COVER_IMAGE_W
+         +IDTH:-300px}\" height=\"${COVER_IMAGE_HEIGHT:-450px}\" alt=\"co
+         +ver\" style=\"border-radius: 8px; display: block; margin: 0 aut
+         +o;\" />"                                                       
+      58        echo ""
+      59      fi
+      60    } > "$index_file"
+
+● 이제 다시 동기화해서 확인해봅시다:
+
+● Bash(rm -rf /home/nadle/para/projects/content-management-system/content/books/
+      the-art-of-unit-testing && bash scripts/sync-obsidian-to-cms.sh
+      resources/books/the-art…)
+  ⎿  [2025-12-22 09:52:52] ✓   ✓ Synced: 좋은-(단위)-테스트.md
+
+     ========== Generating Index Files ==========
+     … +14 lines (ctrl+o to expand)
+
+● Read(content/books/the-art-of-unit-testing/index.md)
+  ⎿  Read 8 lines
+
+● 완료했습니다! 이제 cover 이미지가 다음 스타일로 가운데 정렬됩니다:
+
+  <img src="./cover.png" width="300px" height="450px" alt="cover" 
+       style="border-radius: 8px; display: block; margin: 0 auto;" />
+
+  적용된 스타일:
+  - ✓ border-radius: 8px - 모서리 둥글게
+  - ✓ display: block - 블록 요소로 변환
+  - ✓ margin: 0 auto - 좌우 여백을 자동으로 설정하여 가운데 정렬
+
+  이제부터 생성되는 모든 index.md의 cover 이미지가 가운데 정렬됩니다!
+
+> title: "the art of unit testing" 제목과 인덱스 파일의 내용(제목이나 
+이미지)가 너무 붙어 있는데 간격 넣는 법은? 
+  ⎿ ⧉ Selected 1 lines from content/books/the-art-of-unit-testing/index.md in 
+    Visual Studio Code
+
+● 이미지 위에 여백을 추가하면 됩니다. 몇 가지 방법이 있습니다:
+
+  1. 이미지에 margin-top 추가 (추천):
+  <img src="./cover.png" width="300px" height="450px" alt="cover" 
+       style="border-radius: 8px; display: block; margin: 2rem auto 0;" />
+
+  2. 빈 줄 더 추가:
+  ---
+  title: "the art of unit testing"
+  ---
+
+
+  <img ... />
+
+  3. 텍스트 간격용 요소 추가:
+  <div style="margin-top: 2rem;"></div>
+  <img src="./cover.png" ... />
+
+  가장 간단한 1번 방법으로 적용하면:
+  - margin: 2rem auto 0 = 위 여백 2rem, 좌우 가운데, 아래 여백 0
+
+  원한다면 여백 크기를 조정할 수 있습니다:
+  - 1rem = 작은 간격
+  - 2rem = 중간 간격 (추천)
+  - 3rem = 큰 간격
+
+  1번 방법으로 적용해드릴까요?
+
+> 응 
+
+● Update(scripts/lib/index-generator.sh)
+  ⎿  Added 1 line, removed 1 line                                        
+      54      echo ""
+      55  
+      56      if [ -n "$cover_image" ]; then
+      57 -      echo "<img src=\"./$cover_image\" width=\"${COVER_IMAGE_W
+         -IDTH:-300px}\" height=\"${COVER_IMAGE_HEIGHT:-450px}\" alt=\"co
+         -ver\" style=\"border-radius: 8px; display: block; margin: 0 aut
+         -o;\" />"                                                       
+      57 +      echo "<img src=\"./$cover_image\" width=\"${COVER_IMAGE_W
+         +IDTH:-300px}\" height=\"${COVER_IMAGE_HEIGHT:-450px}\" alt=\"co
+         +ver\" style=\"border-radius: 8px; display: block; margin: 2rem 
+         +auto 0;\" />"                                                  
+      58        echo ""
+      59      fi
+      60    } > "$index_file"
+
+● 다시 동기화해서 확인해봅시다:
+
+● Bash(rm -rf /home/nadle/para/projects/content-management-system/content/books/
+      the-art-of-unit-testing && bash scripts/sync-obsidian-to-cms.sh
+      resources/books/the-art…)
+  ⎿  [2025-12-22 09:56:12] ✓   ✓ Synced: 좋은-(단위)-테스트.md
+
+     ========== Generating Index Files ==========
+     … +14 lines (ctrl+o to expand)
+
+● Read(content/books/the-art-of-unit-testing/index.md)
+  ⎿  Read 8 lines
+
+● 완료했습니다! ✓
+
+  이제 이미지가 제목 아래에 2rem 여백을 두고 표시됩니다:
+
+  style="border-radius: 8px; display: block; margin: 2rem auto 0;"
+
+  적용된 스타일:
+  - 위 여백 2rem - 제목과 이미지 사이의 간격
+  - 좌우 auto - 가운데 정렬
+  - 아래 여백 0 - 이미지 아래는 붙음
+
+  필요하면 여백 크기를 조정할 수 있습니다 (1rem, 3rem 등).
+
+> 커밋 메시지 제안 
+
+● Bash(git status && echo "---" && git diff --stat)
+  ⎿  현재 브랜치 main                                    
+     브랜치가 'origin/main'에 맞게 업데이트된 상태입니다.
+     … +36 lines (ctrl+o to expand)
+
+● 변경 사항 요약:
+  - config.sh: Cover 이미지 크기 설정 추가 (300px × 450px)
+  - index-generator.sh: Cover 이미지를 HTML img 태그로 변경, 가운데 정렬 및 여백 추가
+  - index.md 파일들: 새로운 스타일 적용
+
+  제안:
+
+  feat: Cover 이미지 크기 설정 및 스타일링 개선
+
+  - config.sh에 COVER_IMAGE_WIDTH/HEIGHT 설정값 추가
+  - index.md 생성 시 마크다운 이미지에서 HTML img 태그로 변경
+  - Cover 이미지 가운데 정렬 및 2rem 여백 추가
+  - 모서리를 8px 둥글게 처리
+
+  이 형태로 적용해드릴까요?
+
+> 응 
+
+● Bash(git add scripts/config.sh scripts/lib/index-generator.sh
+      "content/books/the-art-of-unit-testing/index.md" && git commit -m "feat:
+      Cover 이미지 크기 설정 및 스타일링 개선…)
+  ⎿  [main 944eebb] feat: Cover 이미지 크기 설정 및 스타일링 개선
+      3 files changed, 10 insertions(+), 2 deletions(-)
+     현재 브랜치 main
+     … +24 lines (ctrl+o to expand)
+
+● 완료했습니다! 커밋이 성공적으로 생성되었습니다.
+
+  [main 944eebb] feat: Cover 이미지 크기 설정 및 스타일링 개선
+   3 files changed, 10 insertions(+), 2 deletions(-)
+
+  변경 사항:
+  - scripts/config.sh - Cover 크기 설정 추가
+  - scripts/lib/index-generator.sh - Cover 이미지 스타일링 개선
+  - content/books/the-art-of-unit-testing/index.md - 적용 확인
+
+  현재 main 브랜치가 origin/main보다 1개 커밋 앞서 있습니다.
+
+
+

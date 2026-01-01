@@ -19,7 +19,13 @@
     "check": "tsc --noEmit && npx prettier . --check",
     "format": "npx prettier . --write",
     "test": "tsx --test",
-    "profile": "0x -D prof ./quartz/bootstrap-cli.mjs build --concurrency=1"
+    "profile": "0x -D prof ./quartz/bootstrap-cli.mjs build --concurrency=1",
+    "setup:ko": "rm -rf content 2>/dev/null; ln -s content-ko content && cp quartz.config.ts quartz.config.ts.bak && true",
+    "setup:en": "rm -rf content 2>/dev/null; ln -s content-en content && cp quartz.config.ts quartz.config.ts.ko && cp quartz.config.en.ts quartz.config.ts",
+    "build:ko": "npm run setup:ko && npx quartz build",
+    "build:en": "npm run setup:en && npx quartz build -o public-en",
+    "build:all": "npm run build:ko && npm run build:en && cp quartz.config.ts.ko quartz.config.ts",
+    "cleanup": "rm -rf content quartz.config.ts.bak quartz.config.ts.ko"
   },
   "engines": {
     "npm": ">=10.9.2",

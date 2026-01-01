@@ -1,7 +1,21 @@
 {
-  "buildCommand": "npm run build",
+  "buildCommand": "npm run build:all && npm run cleanup",
   "outputDirectory": "public",
   "installCommand": "npm ci",
   "cleanUrls": true,
-  "trailingSlash": false
+  "trailingSlash": false,
+  "rewrites": [
+    {
+      "source": "/en/attachments/:path*",
+      "destination": "/attachments/:path*"
+    },
+    {
+      "source": "/en/:path*",
+      "destination": "/public-en/:path*"
+    },
+    {
+      "source": "/:path*",
+      "destination": "/public/:path*"
+    }
+  ]
 }
