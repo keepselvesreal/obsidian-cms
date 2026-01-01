@@ -7,7 +7,6 @@ const baseDir = process.cwd();
 const publicDir = path.join(baseDir, 'public');
 const publicKoDir = path.join(baseDir, 'public-ko');
 const publicEnDir = path.join(baseDir, 'public-en');
-const attachmentsBackupDir = path.join(baseDir, 'content', 'attachments');
 
 // public 디렉토리 초기화
 if (fs.existsSync(publicDir)) {
@@ -46,20 +45,14 @@ const attachmentsDest = path.join(publicDir, 'attachments');
 if (fs.existsSync(attachmentsSrc)) {
   fs.copySync(attachmentsSrc, attachmentsDest, { overwrite: true });
   console.log('✓ attachments 공유 폴더 복사 완료');
-} else if (fs.existsSync(attachmentsBackupDir)) {
-  // attachments가 없으면 원본에서 복사
-  fs.copySync(attachmentsBackupDir, attachmentsDest, { overwrite: true });
-  console.log('✓ attachments를 원본에서 복사 완료');
 }
 
 // 빌드 결과 폴더 정리
-fs.removeSync(publicKoDir);
-fs.removeSync(publicEnDir);
-
-// 백업 폴더 정리
-const contentBackup = path.join(baseDir, '.content-backup');
-if (fs.existsSync(contentBackup)) {
-  fs.removeSync(contentBackup);
+if (fs.existsSync(publicKoDir)) {
+  fs.removeSync(publicKoDir);
+}
+if (fs.existsSync(publicEnDir)) {
+  fs.removeSync(publicEnDir);
 }
 
 console.log('✓ 임시 빌드 폴더 정리 완료');

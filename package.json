@@ -14,8 +14,8 @@
   "scripts": {
     "quartz": "./quartz/bootstrap-cli.mjs",
     "build": "npm run build:ko && npm run build:en && npm run merge-public",
-    "build:ko": "NODE_LANG=ko node scripts/prepare-content.js && NODE_LANG=ko npx quartz build --outputFolder public-ko",
-    "build:en": "NODE_LANG=en node scripts/prepare-content.js && NODE_LANG=en npx quartz build --outputFolder public-en",
+    "build:ko": "NODE_LANG=ko node scripts/prepare-content.js && NODE_LANG=ko npx quartz build -o public-ko",
+    "build:en": "NODE_LANG=en node scripts/prepare-content.js && NODE_LANG=en npx quartz build -o public-en",
     "merge-public": "node scripts/merge-builds.js",
     "dev": "npx quartz build --serve",
     "docs": "npx quartz build --serve -d docs",
@@ -53,6 +53,7 @@
     "dotenv": "^17.2.3",
     "esbuild-sass-plugin": "^3.3.1",
     "flexsearch": "^0.8.205",
+    "fs-extra": "^11.3.3",
     "github-slugger": "^2.0.0",
     "globby": "^16.0.0",
     "gray-matter": "^4.0.3",
