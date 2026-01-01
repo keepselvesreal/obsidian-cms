@@ -13,7 +13,7 @@
   },
   "scripts": {
     "quartz": "./quartz/bootstrap-cli.mjs",
-    "build": "npm run build:en && npm run build:ko && bash scripts/fix-build-structure.sh",
+    "build": "npm run build:en && npm run build:ko",
     "build:en": "BUILD_LANGUAGE=en npx quartz build -o public/en",
     "build:ko": "BUILD_LANGUAGE=ko npx quartz build -o public/ko",
     "dev": "npm run dev:ko",
