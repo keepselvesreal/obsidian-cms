@@ -8,6 +8,10 @@
     {
       "source": "/en/attachments/:path*",
       "destination": "/attachments/:path*"
+    },
+    {
+      "source": "/en/:path*",
+      "destination": "/en/:path*"
     }
   ]
 }
