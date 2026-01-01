@@ -3,8 +3,5 @@
   "outputDirectory": "public",
   "installCommand": "npm ci",
   "cleanUrls": true,
-  "trailingSlash": false,
-  "redirects": [
-    { "source": "/", "destination": "/ko", "permanent": false }
-  ]
+  "trailingSlash": false
 }
