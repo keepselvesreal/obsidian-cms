@@ -13,7 +13,9 @@
   },
   "scripts": {
     "quartz": "./quartz/bootstrap-cli.mjs",
-    "build": "npx quartz build",
+    "build": "npm run build:ko && npm run build:en",
+    "build:ko": "bash scripts/build-lang.sh ko",
+    "build:en": "bash scripts/build-lang.sh en",
     "dev": "npx quartz build --serve",
     "docs": "npx quartz build --serve -d docs",
     "check": "tsc --noEmit && npx prettier . --check",

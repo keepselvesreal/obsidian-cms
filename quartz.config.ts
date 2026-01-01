@@ -8,6 +8,17 @@ import * as Plugin from "./quartz/plugins"
  *
  * See https://quartz.jzhao.xyz/configuration for more information.
  */
+
+// 빌드 언어 설정: 빌드 스크립트에서 LANG 환경 변수로 제어
+const lang = process.env.LANG || "ko"
+
+// 언어별 baseUrl 설정
+// 로컬 테스트를 위해 상대 경로 사용 (프로덕션 배포 시 수정 필요)
+const baseUrls: Record<string, string> = {
+  ko: "/ko",
+  en: "/en",
+}
+
 const config: QuartzConfig = {
   configuration: {
     pageTitle: "Knowledge Sherpa",
@@ -20,9 +31,9 @@ const config: QuartzConfig = {
         throw new Error("GOOGLE_ANALYTICS_ID environment variable is not set")
       })(),
     },
-    locale: "en-US",
-    baseUrl: "knowledge-sherpa.vercel.app",
-    ignorePatterns: ["private", "templates", ".obsidian"],
+    locale: lang === "en" ? "en-US" : "ko-KR",
+    baseUrl: baseUrls[lang],
+    ignorePatterns: lang === "en" ? ["private", "templates", ".obsidian", "ko"] : ["private", "templates", ".obsidian", "en"],
     defaultDateType: "modified",
     theme: {
       fontOrigin: "googleFonts",
