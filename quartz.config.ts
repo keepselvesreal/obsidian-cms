@@ -13,10 +13,10 @@ import * as Plugin from "./quartz/plugins"
 const lang = process.env.LANG || "ko"
 
 // 언어별 baseUrl 설정
-// 로컬 테스트를 위해 상대 경로 사용 (프로덕션 배포 시 수정 필요)
+// 상대 경로를 기준으로 설정
 const baseUrls: Record<string, string> = {
-  ko: "/ko",
-  en: "/en",
+  ko: ".",
+  en: ".",
 }
 
 const config: QuartzConfig = {
@@ -85,7 +85,7 @@ const config: QuartzConfig = {
       Plugin.ObsidianFlavoredMarkdown({ enableInHtmlEmbed: false }),
       Plugin.GitHubFlavoredMarkdown(),
       Plugin.TableOfContents(),
-      Plugin.CrawlLinks({ markdownLinkResolution: "shortest" }),
+      Plugin.CrawlLinks({ markdownLinkResolution: "absolute" }),
       Plugin.Description(),
       Plugin.Latex({ renderEngine: "katex" }),
     ],
