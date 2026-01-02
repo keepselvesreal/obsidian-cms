@@ -1,4 +1,5 @@
 ---
+draft: true
 version: 1
 note: 초고
 creator: Haiku 4.5
