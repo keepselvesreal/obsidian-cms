@@ -16,8 +16,9 @@ const ArticleWithLanguageToggle: QuartzComponent = ({
   const hasLanguageVersion = !!(enVersion || koVersion)
 
   // 현재 페이지가 영어인지 확인
-  // 도메인 기반으로 감지
-  const isEnglish = typeof window !== 'undefined' ? window.location.hostname.includes('en') : false
+  // koVersion이 있으면 현재는 영어 페이지 (영어에서 한국어로 가는 정보가 있음)
+  // enVersion이 있으면 현재는 한국어 페이지 (한국어에서 영어로 가는 정보가 있음)
+  const isEnglish = !!koVersion
 
   return (
     <article class={classString}>
