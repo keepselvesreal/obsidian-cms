@@ -34,7 +34,6 @@ const config: QuartzConfig = {
       "private",
       "templates",
       ".obsidian",
-      lang === "en" ? "ko" : "en",
     ],
     defaultDateType: "modified",
     theme: {
