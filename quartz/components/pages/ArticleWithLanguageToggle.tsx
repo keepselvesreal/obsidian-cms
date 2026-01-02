@@ -10,17 +10,19 @@ const ArticleWithLanguageToggle: QuartzComponent = ({
   const classes: string[] = fileData.frontmatter?.cssclasses ?? []
   const classString = ["popover-hint", ...classes].join(" ")
 
-  // 영어 버전 존재 여부 확인 (frontmatter에서)
-  const hasEnglishVersion = (fileData.frontmatter?.hasEnglishVersion as boolean) ?? false
+  // 언어 버전 정보 확인 (frontmatter에서)
+  const enVersion = fileData.frontmatter?.enVersion as string | undefined
+  const koVersion = fileData.frontmatter?.koVersion as string | undefined
+  const hasLanguageVersion = !!(enVersion || koVersion)
 
   // 현재 페이지가 영어인지 확인
-  // URL 기반으로 감지 (예: /books/the-art-of-unit-testing/좋은-(단위)-테스트-en)
-  const isEnglish = typeof window !== 'undefined' ? window.location.pathname.includes('-en') : fileData.filePath?.includes('-en')
+  // 도메인 기반으로 감지
+  const isEnglish = typeof window !== 'undefined' ? window.location.hostname.includes('en') : false
 
   return (
     <article class={classString}>
-      {/* 토글 버튼 - 영어 버전이 있을 때만 표시 */}
-      {hasEnglishVersion && (
+      {/* 토글 버튼 - 언어 버전이 있을 때만 표시 */}
+      {hasLanguageVersion && (
         <div
           class="lang-toggle"
           style="display: flex; gap: 8px; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 2px solid #e0e0e0; justify-content: flex-end;"
