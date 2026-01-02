@@ -89,6 +89,17 @@ export default (() => {
         <meta name="description" content={description} />
         <meta name="generator" content="Quartz" />
 
+        {/* Language version metadata for bilingual toggle */}
+        {(fileData.frontmatter?.enVersion || fileData.frontmatter?.koVersion) && (
+          <meta
+            name="page-versions"
+            content={JSON.stringify({
+              enVersion: fileData.frontmatter?.enVersion,
+              koVersion: fileData.frontmatter?.koVersion,
+            })}
+          />
+        )}
+
         {css.map((resource) => CSSResourceToStyleElement(resource, true))}
         {js
           .filter((resource) => resource.loadTime === "beforeDOMReady")

@@ -1,4 +1,5 @@
 ---
+koVersion: "요약-05장-검색의뉴노멀AI에게간택당하는시대"
 version: 1
 note: 초고
 creator: Haiku 4.5

@@ -1,4 +1,5 @@
 ---
+koVersion: "요약-06장-새로운관계정립AI컴패니언시대의명암"
 version: 1
 note: 초고
 creator: Haiku 4.5

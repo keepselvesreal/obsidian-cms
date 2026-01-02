@@ -23,6 +23,15 @@ echo "=== 책을 언어별로 분류 시작 ==="
 echo "소스: $SOURCE_DIR"
 echo ""
 
+# 매핑 파일 생성
+echo "--- 매핑 파일 생성 ---"
+"$SCRIPT_DIR/generate-mapping.sh" "$SOURCE_DIR"
+if [ $? -ne 0 ]; then
+    echo "오류: 매핑 파일 생성 실패"
+    exit 1
+fi
+echo ""
+
 # 한국어 요약본 복사
 echo "--- 한국어 요약본 복사 ---"
 "$SCRIPT_DIR/copy-korean-summaries.sh" "$SOURCE_DIR"
