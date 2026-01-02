@@ -14,9 +14,10 @@
   "scripts": {
     "quartz": "./quartz/bootstrap-cli.mjs",
     "build": "npm run build:ko && npm run build:en",
-    "build:ko": "bash scripts/build-lang.sh ko",
-    "build:en": "bash scripts/build-lang.sh en",
-    "dev": "npx quartz build --serve",
+    "build:en": "bash scripts/build-en.sh",
+    "build:ko": "bash scripts/build-ko.sh",
+    "dev": "npm run build && npm run serve",
+    "serve": "npx -y serve -l 3000 public",
     "docs": "npx quartz build --serve -d docs",
     "check": "tsc --noEmit && npx prettier . --check",
     "format": "npx prettier . --write",
@@ -112,6 +113,7 @@
     "@types/ws": "^8.18.1",
     "@types/yargs": "^17.0.35",
     "esbuild": "^0.27.1",
+    "http-server": "^14.1.1",
     "prettier": "^3.7.4",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"

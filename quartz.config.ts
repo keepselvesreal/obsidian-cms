@@ -9,14 +9,11 @@ import * as Plugin from "./quartz/plugins"
  * See https://quartz.jzhao.xyz/configuration for more information.
  */
 
-// 빌드 언어 설정: 빌드 스크립트에서 LANG 환경 변수로 제어
-const lang = process.env.LANG || "ko"
+// 빌드 언어 설정: 빌드 스크립트(build-en.sh, build-ko.sh)에서 LANG 환경 변수로 제어
+const lang = process.env.LANG
 
-// 언어별 baseUrl 설정
-// 상대 경로를 기준으로 설정
-const baseUrls: Record<string, string> = {
-  ko: ".",
-  en: ".",
+if (!lang || (lang !== "en" && lang !== "ko")) {
+  throw new Error("LANG must be 'en' or 'ko'. Use: npm run build:en or npm run build:ko")
 }
 
 const config: QuartzConfig = {
@@ -32,8 +29,13 @@ const config: QuartzConfig = {
       })(),
     },
     locale: lang === "en" ? "en-US" : "ko-KR",
-    baseUrl: baseUrls[lang],
-    ignorePatterns: lang === "en" ? ["private", "templates", ".obsidian", "ko"] : ["private", "templates", ".obsidian", "en"],
+    baseUrl: ".",
+    ignorePatterns: [
+      "private",
+      "templates",
+      ".obsidian",
+      lang === "en" ? "ko" : "en",
+    ],
     defaultDateType: "modified",
     theme: {
       fontOrigin: "googleFonts",
@@ -85,7 +87,7 @@ const config: QuartzConfig = {
       Plugin.ObsidianFlavoredMarkdown({ enableInHtmlEmbed: false }),
       Plugin.GitHubFlavoredMarkdown(),
       Plugin.TableOfContents(),
-      Plugin.CrawlLinks({ markdownLinkResolution: "absolute" }),
+      Plugin.CrawlLinks({ markdownLinkResolution: "shortest" }),
       Plugin.Description(),
       Plugin.Latex({ renderEngine: "katex" }),
     ],
