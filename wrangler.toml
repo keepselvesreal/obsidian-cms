@@ -1,10 +1,2 @@
 name = "knowledge-sherpa-ko"
-type = "javascript"
 pages_build_output_dir = "public/ko"
-
-[env.production]
-vars = { GOOGLE_ANALYTICS_ID = "G-87XJ3TQTKK" }
-
-[build]
-command = "bash scripts/build-ko.sh"
-cwd = "."
