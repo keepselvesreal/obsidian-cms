@@ -16,6 +16,7 @@
     "build": "npm run build:ko && npm run build:en",
     "build:en": "bash scripts/build-en.sh",
     "build:ko": "bash scripts/build-ko.sh",
+    "deploy": "bash scripts/deploy-cloudflare.sh",
     "dev": "npm run build && npm run serve",
     "serve": "npx -y serve -l 3000 public",
     "docs": "npx quartz build --serve -d docs",
